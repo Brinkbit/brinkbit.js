@@ -2,7 +2,6 @@
 // create a new Brinkbit instance
 const brinkbit = new Brinkbit({
     base: '/api', // the route of your application on which the server-side sdk is listening
-    appName: 'TrialByFireball', // used as a prefix for storage purposes
     appId: 'xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx', // your unique app id (can be retrieved from brinkbit console)
 });
 ```
@@ -42,7 +41,7 @@ brinkbit.get( '/users/12345/' );
 
 ```javascript
 brinkbit.put({
-    url: '/users/12345/',
+    uri: '/users/12345/',
     data: {
         email: 'violet2@trialbyfireball.com',
     },

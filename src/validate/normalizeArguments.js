@@ -7,7 +7,7 @@ module.exports = function normalizeArguments( ...args ) {
         options = args[1];
     }
     if ( typeof args[0] === 'string' ) {
-        options.url = args[0];
+        options.uri = args[0];
     }
     if ( args.length > 0 && typeof args[args.length - 1] === 'function' ) {
         options.callback = args[args.length - 1];

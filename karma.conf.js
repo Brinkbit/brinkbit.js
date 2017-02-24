@@ -9,7 +9,7 @@ module.exports = function conf( config ) {
         frameworks: ['mocha'],
 
         preprocessors: {
-            'test/client/index.js': [ 'webpack', 'sourcemap' ],
+            'test/index.js': [ 'webpack', 'sourcemap' ],
         },
 
         reporters: [ 'mocha', 'coverage' ],
@@ -28,8 +28,10 @@ module.exports = function conf( config ) {
         },
 
         client: {
-            captureConsole: false,
-            mocha: {},
+            captureConsole: true,
+            mocha: {
+                bail: true,
+            },
         },
 
         webpackMiddleware: {
