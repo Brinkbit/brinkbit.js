@@ -47,6 +47,14 @@ describe( 'validate', function() {
                 },
             });
         });
+
+        it( 'should resolve on null and undefined values', function() {
+            return validate({}, {
+                password: {
+                    dataType: 'string',
+                },
+            });
+        });
     });
 });
 

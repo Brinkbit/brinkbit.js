@@ -4,17 +4,36 @@ const request = Promise.promisify( require( 'browser-request' ));
 const merge = require( 'lodash.merge' );
 const resolveUrl = require( 'resolve-url' );
 const store = require( 'store' );
+const validateJs = require( 'validate.js' );
 
 const normalizeArguments = require( './validate/normalizeArguments' );
 const validate = require( './validate' );
+const ValidationError = require( './validate/validationError' );
 const BrinkbitEvent = require( './events' );
 
 const User = require( './user' );
 
 class Brinkbit {
     constructor( config ) {
+        if ( typeof config !== 'object' ) {
+            throw new TypeError( 'brinkbit.js config must be an object' );
+        }
+        const invalid = validateJs( config, {
+            base: {
+                dataType: 'string',
+            },
+            appId: {
+                dataType: 'string',
+                presence: true,
+            },
+        });
+        if ( invalid ) {
+            throw new ValidationError({
+                message: invalid.error,
+                details: invalid,
+            });
+        }
         this.base = typeof config.base !== 'string' ? '/api' : config.base;
-        this.appName = config.appName;
         this.use( User );
     }
 
@@ -23,23 +42,22 @@ class Brinkbit {
     }
 
     store( key, value ) {
-        store.set( `${this.appName}_${key}`, value );
+        store.set( `${this.appId}_${key}`, value );
     }
 
     retrieve( key ) {
-        return store.get( `${this.appName}_${key}` );
+        return store.get( `${this.appId}_${key}` );
     }
 
     remove( key ) {
-        return store.remove( `${this.appName}_${key}` );
+        return store.remove( `${this.appId}_${key}` );
     }
 
     request( ...args ) {
         return validate( normalizeArguments( ...args ), {
             url: {
                 presence: true,
-                dataType: 'String',
-                url: true,
+                dataType: 'string',
             },
         })
         .then(( opts ) => {
@@ -142,10 +160,10 @@ class Brinkbit {
     }
 
     use( plugin ) {
-        if ( Object.prototype.hasOwnProperty.call( Brinkbit, plugin.name )) {
+        if ( Object.prototype.hasOwnProperty.call( this, plugin.name )) {
             throw new Error( `Brinkbit plugin namespace conflict: two plugins are named '${plugin.name}'. Please rename one of them.` );
         }
-        Brinkbit[plugin.name] = plugin.initialize( this );
+        this[plugin.name] = plugin.initialize( this );
     }
 }
 
