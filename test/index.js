@@ -45,4 +45,18 @@ describe( 'brinkbit.js', function() {
         });
         expect( brinkbit ).to.be.an.instanceOf( Brinkbit );
     });
+
+    describe( 'brinkbit.request', function() {
+        const brinkbit = new Brinkbit({
+            base: 'http://localhost:3010/api/',
+            appId: 'test',
+        });
+
+        it( 'should make a valid XMLHttpRequest to the correct route', function() {
+            return brinkbit.request( './' )
+            .then( function( response ) {
+                expect( response.body ).to.deep.equal({ success: true });
+            });
+        });
+    });
 });

@@ -37,8 +37,8 @@ class Brinkbit {
         this.use( User );
     }
 
-    resolveUrl( url ) {
-        return resolveUrl( this.base, url );
+    resolveUrl( uri ) {
+        return resolveUrl( this.base, uri );
     }
 
     store( key, value ) {
@@ -54,22 +54,24 @@ class Brinkbit {
     }
 
     request( ...args ) {
-        return validate( normalizeArguments( ...args ), {
-            url: {
+        const options = normalizeArguments( ...args );
+        return validate( options, {
+            uri: {
                 presence: true,
                 dataType: 'string',
             },
         })
-        .then(( opts ) => {
-            opts.url = this.resolveUrl( opts.url );
+        .then(() => {
+            options.uri = this.resolveUrl( options.uri );
             const token = this.retrieve( 'token' );
             if ( token ) {
-                opts.headers = merge( opts.headers, {
+                options.headers = merge( options.headers, {
                     Authorization: `Bearer ${token}`,
                 });
             }
-            return request( opts )
+            return request( options )
             .then(( response ) => {
+                response.body = JSON.parse( response.body );
                 if ( response.statusCode >= 400 ) {
                     return Promise.reject( new Error( response.body ));
                 }
@@ -91,6 +93,7 @@ class Brinkbit {
         const options = normalizeArguments( ...args );
         const opts = merge({}, options, {
             method: 'PUT',
+            json: true,
         });
         return this.request( opts );
     }
@@ -99,6 +102,7 @@ class Brinkbit {
         const options = normalizeArguments( ...args );
         const opts = merge({}, options, {
             method: 'POST',
+            json: true,
         });
         return this.request( opts );
     }

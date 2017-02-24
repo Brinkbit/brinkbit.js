@@ -28,8 +28,10 @@ module.exports = function conf( config ) {
         },
 
         client: {
-            captureConsole: false,
-            mocha: {},
+            captureConsole: true,
+            mocha: {
+                bail: true,
+            },
         },
 
         webpackMiddleware: {

@@ -41,7 +41,7 @@ brinkbit.get( '/users/12345/' );
 
 ```javascript
 brinkbit.put({
-    url: '/users/12345/',
+    uri: '/users/12345/',
     data: {
         email: 'violet2@trialbyfireball.com',
     },
