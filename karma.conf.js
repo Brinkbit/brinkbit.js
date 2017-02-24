@@ -9,7 +9,7 @@ module.exports = function conf( config ) {
         frameworks: ['mocha'],
 
         preprocessors: {
-            'test/client/index.js': [ 'webpack', 'sourcemap' ],
+            'test/index.js': [ 'webpack', 'sourcemap' ],
         },
 
         reporters: [ 'mocha', 'coverage' ],
