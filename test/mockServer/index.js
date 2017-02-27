@@ -16,8 +16,23 @@ app.get( '/api/', ( req, res ) => {
     res.send({ success: true });
 });
 app.post( '/api/login/', ( req, res ) => {
-    res.status( 200 );
-    res.send({ success: true });
+    if ( req.body.username === 'Violet' && req.body.password === 'FireballsAreTheWorst' ) {
+        res.status( 200 );
+        res.send({
+            access_token: 'testToken',
+            user: 'testUserid',
+        });
+    }
+    else {
+        res.status( 401 );
+        res.send({
+            code: 401,
+            description: 'Invalid username or password',
+            details: {},
+            type: 'authentication_error',
+            error: 'Unauthorized',
+        });
+    }
 });
 app.listen( process.env.PORT, () => {
     console.log( `server started on ${process.env.PORT}` );

@@ -2,11 +2,13 @@ global.Promise = require( 'bluebird' );
 const eventEmitter = require( 'event-emitter' );
 const request = Promise.promisify( require( 'browser-request' ));
 const merge = require( 'lodash.merge' );
+const pick = require( 'lodash.pick' );
 const resolveUrl = require( 'resolve-url' );
 const store = require( 'store' );
 const validateJs = require( 'validate.js' );
 
 const normalizeArguments = require( './validate/normalizeArguments' );
+const normalizeResponse = require( './validate/normalizeResponse' );
 const validate = require( './validate' );
 const ValidationError = require( './validate/validationError' );
 const BrinkbitEvent = require( './events' );
@@ -55,7 +57,7 @@ class Brinkbit {
 
     request( ...args ) {
         const options = normalizeArguments( ...args );
-        return validate( options, {
+        const promise = validate( options, {
             uri: {
                 presence: true,
                 dataType: 'string',
@@ -63,6 +65,9 @@ class Brinkbit {
         })
         .then(() => {
             options.uri = this.resolveUrl( options.uri );
+            if ( typeof options.body === 'object' ) {
+                options.body = JSON.stringify( options.body );
+            }
             const token = this.retrieve( 'token' );
             if ( token ) {
                 options.headers = merge( options.headers, {
@@ -71,7 +76,9 @@ class Brinkbit {
             }
             return request( options )
             .then(( response ) => {
-                response.body = JSON.parse( response.body );
+                if ( typeof response.body === 'string' ) {
+                    response.body = JSON.parse( response.body );
+                }
                 if ( response.statusCode >= 400 ) {
                     return Promise.reject( new Error( response.body ));
                 }
@@ -79,6 +86,7 @@ class Brinkbit {
                 return response;
             });
         });
+        return normalizeResponse( promise, options );
     }
 
     get( ...args ) {
@@ -117,13 +125,8 @@ class Brinkbit {
 
     login( ...args ) {
         const options = normalizeArguments( ...args );
-        return validate( options, {
-            data: {
-                presence: true,
-            },
-        })
-        .then(() => Promise.any([
-            validate( options.data, {
+        const promise = Promise.any([
+            validate( options, {
                 email: {
                     dataType: 'string',
                 },
@@ -131,7 +134,7 @@ class Brinkbit {
                     presence: true,
                 },
             }),
-            validate( options.data, {
+            validate( options, {
                 username: {
                     dataType: 'string',
                 },
@@ -139,28 +142,33 @@ class Brinkbit {
                     presence: true,
                 },
             }),
-        ]))
-        .then(() => this.post( options ))
+        ])
+        .then(() => {
+            const body = pick( options, [ 'email', 'username', 'password' ]);
+            return this.post({
+                uri: './login/',
+                body,
+            });
+        })
         .then(( response ) => {
             this.store( 'token', response.body.access_token );
             this.store( 'user', response.body.user );
-            const user = new Brinkbit.User( response.body.user );
+            const user = new this.User({ id: response.body.user });
             this.emit( 'login', new BrinkbitEvent( 'login', user ));
-            options.callback( user );
             return user;
         });
+        return normalizeResponse( promise, options );
     }
 
-    logout( callback ) {
-        return this.get( '/logout/' )
+    logout( ...args ) {
+        const options = normalizeArguments( ...args );
+        const promise = this.get( './logout/' )
         .then(() => {
             this.remove( 'token' );
             this.remove( 'user' );
             this.emit( 'logout', new BrinkbitEvent( 'logout' ));
-            if ( typeof callback === 'function' ) {
-                callback();
-            }
         });
+        return normalizeResponse( promise, options );
     }
 
     use( plugin ) {
@@ -170,6 +178,8 @@ class Brinkbit {
         this[plugin.name] = plugin.initialize( this );
     }
 }
+
+Brinkbit.BrinkbitEvent = BrinkbitEvent;
 
 eventEmitter( Brinkbit.prototype );
 

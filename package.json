@@ -63,6 +63,7 @@
     "custom-error-instance": "^2.1.1",
     "event-emitter": "^0.3.4",
     "lodash.merge": "^4.6.0",
+    "lodash.pick": "^4.4.0",
     "node-uuid": "^1.4.7",
     "resolve-url": "^0.2.1",
     "store": "^1.3.20",

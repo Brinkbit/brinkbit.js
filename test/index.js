@@ -58,5 +58,50 @@ describe( 'brinkbit.js', function() {
                 expect( response.body ).to.deep.equal({ success: true });
             });
         });
+
+        it( 'should support callback signature', function( done ) {
+            brinkbit.request( './', ( error, response ) => {
+                expect( error ).to.not.exist;
+                expect( response.body ).to.deep.equal({ success: true });
+                done();
+            });
+        });
+
+        it( 'should support object with success callback signature', function( done ) {
+            brinkbit.request({
+                uri: './',
+                success: ( response ) => {
+                    expect( response.body ).to.deep.equal({ success: true });
+                    done();
+                },
+            });
+        });
+
+        it( 'should emit a "response" event', function( done ) {
+            brinkbit.on( 'response', ( event ) => {
+                expect( event ).to.be.an.instanceOf( Brinkbit.BrinkbitEvent );
+                expect( event ).to.have.property( 'type' ).and.equal( 'response' );
+                expect( event.response.body ).to.deep.equal({ success: true });
+                done();
+            });
+            brinkbit.request( './' );
+        });
+    });
+
+    describe( 'login', function() {
+        const brinkbit = new Brinkbit({
+            base: 'http://localhost:3010/api/',
+            appId: 'test',
+        });
+
+        it( 'should login the user and return a new User object', function() {
+            return brinkbit.login({
+                username: 'Violet',
+                password: 'FireballsAreTheWorst',
+            })
+            .then( function( user ) {
+                expect( user ).to.be.an.instanceOf( brinkbit.User );
+            });
+        });
     });
 });

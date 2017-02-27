@@ -11,8 +11,6 @@ describe( 'normalizeArguments', function() {
         const testObj = { uri: 'test' };
         const normalized = normalizeArguments( testObj );
         expect( normalized ).to.equal( testObj );
-        expect( normalized ).have.property( 'callback' ).and.be.a.function;
-        expect( normalized.callback()).to.not.exist;
     });
 
     it( 'should add a callback to the object', function() {

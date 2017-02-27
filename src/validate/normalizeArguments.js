@@ -12,8 +12,5 @@ module.exports = function normalizeArguments( ...args ) {
     if ( args.length > 0 && typeof args[args.length - 1] === 'function' ) {
         options.callback = args[args.length - 1];
     }
-    if ( typeof options.callback !== 'function' ) {
-        options.callback = function identity() {};
-    }
     return options;
 };
