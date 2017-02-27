@@ -1,9 +1,6 @@
 module.exports = {
     context: __dirname,
-    entry: [
-        'babel-polyfill',
-        './src/index.js',
-    ],
+    entry: './src/index.js',
     output: {
         filename: 'dist/brinkbit.js',
         libraryTarget: 'umd',
@@ -14,4 +11,5 @@ module.exports = {
             { test: /\.js$/, loader: `babel-loader${process.env.NODE_ENV === 'test' ? '' : '?presets[]=es2015'}` },
         ],
     },
+    devtool: 'inline-source-map',
 };

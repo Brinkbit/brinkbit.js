@@ -8,13 +8,14 @@ const brinkbit = new Brinkbit({
 
 ```javascript
 // create a new user
-brinkbit.User.create({
+const user = new brinkbit.User({
     username: 'Violet',
     email: 'violet@trialbyfireball.com',
     password: 'FireballsAreTheWorst',
-})
-.then(( user ) => {
-    // user is an instance of brinkbit.User
+});
+user.save()
+.then(() => {
+    // user has been created on server
 });
 ```
 
