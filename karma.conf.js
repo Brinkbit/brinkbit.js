@@ -20,7 +20,7 @@ module.exports = function conf( config ) {
 
         singleRun: true,
 
-        browsers: ['Chrome'],
+        browsers: ['Chrome_without_security'],
 
         coverageReporter: {
             type: 'html',
@@ -31,6 +31,13 @@ module.exports = function conf( config ) {
             captureConsole: true,
             mocha: {
                 bail: true,
+            },
+        },
+
+        customLaunchers: {
+            Chrome_without_security: {
+                base: 'Chrome',
+                flags: ['--disable-web-security'],
             },
         },
 

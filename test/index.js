@@ -104,4 +104,6 @@ describe( 'brinkbit.js', function() {
             });
         });
     });
+
+    require( './user' );
 });

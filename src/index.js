@@ -5,22 +5,17 @@ const merge = require( 'lodash.merge' );
 const pick = require( 'lodash.pick' );
 const resolveUrl = require( 'resolve-url' );
 const store = require( 'store' );
-const validateJs = require( 'validate.js' );
 
 const normalizeArguments = require( './validate/normalizeArguments' );
 const normalizeResponse = require( './validate/normalizeResponse' );
 const validate = require( './validate' );
-const ValidationError = require( './validate/validationError' );
 const BrinkbitEvent = require( './events' );
 
 const User = require( './user' );
 
 class Brinkbit {
     constructor( config ) {
-        if ( typeof config !== 'object' ) {
-            throw new TypeError( 'brinkbit.js config must be an object' );
-        }
-        const invalid = validateJs( config, {
+        validate.constructor( config, {
             base: {
                 dataType: 'string',
             },
@@ -28,14 +23,12 @@ class Brinkbit {
                 dataType: 'string',
                 presence: true,
             },
+            parse: {
+                dataType: 'function',
+            },
         });
-        if ( invalid ) {
-            throw new ValidationError({
-                message: invalid.error,
-                details: invalid,
-            });
-        }
         this.base = typeof config.base !== 'string' ? '/api' : config.base;
+        this.parse = config.parse ? config.parse : JSON.parse;
         this.use( User );
     }
 
@@ -57,70 +50,27 @@ class Brinkbit {
 
     request( ...args ) {
         const options = normalizeArguments( ...args );
-        const promise = validate( options, {
-            uri: {
-                presence: true,
-                dataType: 'string',
-            },
-        })
-        .then(() => {
-            options.uri = this.resolveUrl( options.uri );
-            if ( typeof options.body === 'object' ) {
-                options.body = JSON.stringify( options.body );
-            }
-            const token = this.retrieve( 'token' );
-            if ( token ) {
-                options.headers = merge( options.headers, {
-                    Authorization: `Bearer ${token}`,
-                });
-            }
-            return request( options )
-            .then(( response ) => {
-                if ( typeof response.body === 'string' ) {
-                    response.body = JSON.parse( response.body );
-                }
-                if ( response.statusCode >= 400 ) {
-                    return Promise.reject( new Error( response.body ));
-                }
-                this.emit( 'response', new BrinkbitEvent( 'response', response ));
-                return response;
-            });
-        });
-        return normalizeResponse( promise, options );
+        return normalizeResponse( this._request( options ), options );
     }
 
     get( ...args ) {
         const options = normalizeArguments( ...args );
-        const opts = merge({}, options, {
-            method: 'GET',
-        });
-        return this.request( opts );
+        return normalizeResponse( this._get( options ), options );
     }
 
     put( ...args ) {
         const options = normalizeArguments( ...args );
-        const opts = merge({}, options, {
-            method: 'PUT',
-            json: true,
-        });
-        return this.request( opts );
+        return normalizeResponse( this._put( options ), options );
     }
 
     post( ...args ) {
         const options = normalizeArguments( ...args );
-        const opts = merge({}, options, {
-            method: 'POST',
-            json: true,
-        });
-        return this.request( opts );
+        return normalizeResponse( this._post( options ), options );
     }
 
     delete( ...args ) {
         const options = normalizeArguments( ...args );
-        const opts = merge({}, options, {
-            method: 'DELETE',
-        });
-        return this.request( opts );
+        return normalizeResponse( this._delete( options ), options );
     }
 
     login( ...args ) {
@@ -145,7 +95,7 @@ class Brinkbit {
         ])
         .then(() => {
             const body = pick( options, [ 'email', 'username', 'password' ]);
-            return this.post({
+            return this._post({
                 uri: './login/',
                 body,
             });
@@ -153,16 +103,19 @@ class Brinkbit {
         .then(( response ) => {
             this.store( 'token', response.body.access_token );
             this.store( 'user', response.body.user );
-            const user = new this.User({ id: response.body.user });
-            this.emit( 'login', new BrinkbitEvent( 'login', user ));
-            return user;
+            const user = new this.User({ _id: response.body.user });
+            return user.fetch()
+            .then(() => {
+                this.emit( 'login', new BrinkbitEvent( 'login', user ));
+                return user;
+            });
         });
         return normalizeResponse( promise, options );
     }
 
     logout( ...args ) {
         const options = normalizeArguments( ...args );
-        const promise = this.get( './logout/' )
+        const promise = this._get( './logout/' )
         .then(() => {
             this.remove( 'token' );
             this.remove( 'user' );
@@ -176,6 +129,70 @@ class Brinkbit {
             throw new Error( `Brinkbit plugin namespace conflict: two plugins are named '${plugin.name}'. Please rename one of them.` );
         }
         this[plugin.name] = plugin.initialize( this );
+    }
+
+    // private promise-driven api
+
+    _request( options ) {
+        return validate( options, {
+            uri: {
+                presence: true,
+                dataType: 'string',
+            },
+        })
+        .then(() => {
+            options.uri = this.resolveUrl( options.uri );
+            if ( typeof options.body === 'object' ) {
+                options.body = JSON.stringify( options.body );
+            }
+            const token = this.retrieve( 'token' );
+            if ( token ) {
+                options.headers = merge( options.headers, {
+                    Authorization: `Bearer ${token}`,
+                });
+            }
+            return request( options )
+            .then(( response ) => {
+                if ( typeof response.body === 'string' ) {
+                    response.body = this.parse( response.body );
+                }
+                if ( response.statusCode >= 400 ) {
+                    return Promise.reject( new Error( response.body ));
+                }
+                this.emit( 'response', new BrinkbitEvent( 'response', response ));
+                return response;
+            });
+        });
+    }
+
+    _get( ...args ) {
+        const opts = merge({}, normalizeArguments( ...args ), {
+            method: 'GET',
+        });
+        return this._request( opts );
+    }
+
+    _put( ...args ) {
+        const opts = merge({}, normalizeArguments( ...args ), {
+            method: 'PUT',
+            json: true,
+        });
+        return this._request( opts );
+    }
+
+    _post( ...args ) {
+        const opts = merge({}, normalizeArguments( ...args ), {
+            method: 'POST',
+            json: true,
+        });
+        return this._request( opts );
+    }
+
+    _delete( ...args ) {
+        const opts = merge({}, normalizeArguments( ...args ), {
+            method: 'DELETE',
+        });
+        return this._request( opts );
     }
 }
 

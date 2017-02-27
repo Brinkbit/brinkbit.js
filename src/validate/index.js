@@ -6,7 +6,7 @@ validateJs.validators.dataType = function validateDataType( value, options ) {
 
 const ValidationError = require( './validationError' );
 
-module.exports = function validate( attributes, constraints ) {
+const validate = function validate( attributes, constraints ) {
     const invalid = validateJs( attributes, constraints );
     if ( invalid ) {
         return Promise.reject( new ValidationError({
@@ -16,3 +16,18 @@ module.exports = function validate( attributes, constraints ) {
     }
     return Promise.resolve();
 };
+
+validate.constructor = function validateConstructor( config, constraints ) {
+    if ( typeof config !== 'object' ) {
+        throw new TypeError( 'config must be an object' );
+    }
+    const invalid = validateJs( config, constraints );
+    if ( invalid ) {
+        throw new ValidationError({
+            message: invalid.error,
+            details: invalid,
+        });
+    }
+};
+
+module.exports = validate;
