@@ -2,6 +2,8 @@ const express = require( 'express' );
 const bodyParser = require( 'body-parser' );
 const bearerToken = require( 'express-bearer-token' );
 
+const userRouter = require( './user' );
+
 const app = express();
 
 app.use( bearerToken());
@@ -10,25 +12,7 @@ app.use( bodyParser.urlencoded({ extended: true }));
 app.get( '/api/', ( req, res ) => {
     res.send({ success: true });
 });
-app.get( '/api/users/testUserId/', ( req, res ) => {
-    if ( req.token === 'testToken' ) {
-        res.send({
-            _id: 'testUserid',
-            username: 'Violet',
-            email: 'violet@trialbyfireball.com',
-        });
-    }
-    else {
-        res.status( 404 );
-        res.send({
-            code: 404,
-            description: 'Not Found',
-            details: {},
-            type: 'invalid_request_error',
-            error: 'Not Found',
-        });
-    }
-});
+app.use( userRouter );
 app.post( '/api/login/', ( req, res ) => {
     if ( req.body.username === 'Violet' && req.body.password === 'FireballsAreTheWorst' ) {
         res.status( 200 );

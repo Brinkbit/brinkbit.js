@@ -1,5 +1,3 @@
-const pick = require( 'lodash.pick' );
-
 const validate = require( '../validate' );
 const ValidationError = require( '../validate/validationError' );
 const Plugin = require( '../plugin' );
@@ -9,6 +7,8 @@ function initialize( brinkbit ) {
 
         constructor( config ) {
             super( brinkbit, {}, config );
+            this.read = [ '_id', 'dateCreated', 'email', 'username' ];
+            this.write = [ 'email', 'password', 'username' ];
             if ( config ) {
                 validate.constructor( config, {
                     username: {
@@ -21,10 +21,8 @@ function initialize( brinkbit ) {
                         dataType: 'string',
                     },
                 });
-                this.set( this.data, pick( config, [ 'username', 'email', 'password' ]));
+                this.set( config );
             }
-            this.read = [ '_id', 'dateCreated', 'email', 'username' ];
-            this.write = [ 'email', 'password', 'username' ];
         }
 
         getUrl( method ) {
@@ -38,10 +36,6 @@ function initialize( brinkbit ) {
 
         validate( method, data ) {
             switch ( method ) {
-                case 'get':
-                    return typeof this.id === 'string' ?
-                        Promise.resolve() :
-                        Promise.reject( new ValidationError( 'Cannot fetch user without id' ));
                 case 'delete':
                     return typeof this.id === 'string' ?
                         Promise.resolve() :
@@ -74,7 +68,9 @@ function initialize( brinkbit ) {
                         },
                     });
                 default:
-                    return Promise.resolve();
+                    return typeof this.id === 'string' ?
+                        Promise.resolve() :
+                        Promise.reject( new ValidationError( 'Cannot fetch user without id' ));
             }
         }
 

@@ -33,10 +33,10 @@ class Plugin {
     fetch( ...args ) {
         const options = normalizeArguments( ...args );
         const promise = this.validate( 'get' )
-        .then(() => this.brinkbit._get( options.uri || this.getUrl( 'fetch' )))
+        .then(() => this.brinkbit._get( options.uri || this.getUrl( 'get' )))
         .then(( response ) => {
             merge( this.data, pick( response.body, this.read ));
-            this.emit( 'save', new BrinkbitEvent( 'save', response ));
+            this.emit( 'fetch', new BrinkbitEvent( 'fetch', response ));
             return response;
         });
         return normalizeResponse( promise, options );
@@ -50,9 +50,13 @@ class Plugin {
         const body = pick( this.data, this.write );
         const method = options.method || ( this.id ? 'put' : 'post' );
         const promise = this.validate( method, body )
-        .then(() => this.brinkbit[`_${method}`]( options.uri || this.getUrl( 'fetch' ), { body }))
+        .then(() => this.brinkbit[`_${method}`]( options.uri || this.getUrl( method ), { body }))
         .then(( response ) => {
-            merge( this.data, pick( response.body, this.read ));
+            this.set( response.body );
+            if ( response.body._id ) {
+                this.data._id = response.body._id;
+                this.id = response.body._id;
+            }
             this.emit( 'save', new BrinkbitEvent( 'save', response ));
             return response;
         });
@@ -61,7 +65,7 @@ class Plugin {
 
     destroy() {
         return this.validate( 'delete' )
-        .then(() => this.brinkbit._delete( this.getUrl( 'fetch' )))
+        .then(() => this.brinkbit._delete( this.getUrl( 'delete' )))
         .then(( response ) => {
             this.id = undefined;
             this.data.id = undefined;
@@ -82,7 +86,14 @@ class Plugin {
         }
     }
 
+    static create( ...args ) {
+        const instance = new this( ...args );
+        return instance.save()
+        .then(() => instance );
+    }
+
 }
+
 
 eventEmitter( Plugin.prototype );
 
