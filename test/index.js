@@ -2,12 +2,13 @@ const expect = require( 'chai' ).expect;
 
 const Brinkbit = require( '../src' );
 const ValidationError = require( '../src/validate/validationError' );
+const env = require( '../env' );
 
 describe( 'brinkbit.js', function() {
     require( './validate' );
 
     it( 'should expose a class', function() {
-        expect( Brinkbit ).to.be.a.class;
+        expect( Brinkbit ).to.be.a( 'function' );
     });
 
     it( 'should throw if no config', function() {
@@ -23,7 +24,7 @@ describe( 'brinkbit.js', function() {
         expect( function() {
             new Brinkbit({ // eslint-disable-line no-new
                 base: {},
-                appId: 'valid',
+                gameId: 'valid',
             });
         }).to.throw( ValidationError );
         expect( function() {
@@ -35,32 +36,31 @@ describe( 'brinkbit.js', function() {
 
     it( 'should create a new instance with valid config', function() {
         let brinkbit = new Brinkbit({
-            appId: 'valid',
+            gameId: 'valid',
         });
         expect( brinkbit ).to.be.an.instanceOf( Brinkbit );
-        expect( brinkbit.User ).to.be.a.class;
+        expect( brinkbit.User ).to.be.a( 'function' );
         brinkbit = new Brinkbit({
-            appId: 'valid',
+            gameId: 'valid',
             base: '/valid',
         });
         expect( brinkbit ).to.be.an.instanceOf( Brinkbit );
     });
 
     describe( 'brinkbit.request', function() {
-        const brinkbit = new Brinkbit({
-            base: 'http://localhost:3010/api/',
-            appId: 'test',
+        before( function() {
+            this.brinkbit = new Brinkbit( env.client.config );
         });
 
         it( 'should make a valid XMLHttpRequest to the correct route', function() {
-            return brinkbit.request( './' )
+            return this.brinkbit.request( './' )
             .then( function( response ) {
                 expect( response.body ).to.deep.equal({ success: true });
             });
         });
 
         it( 'should support callback signature', function( done ) {
-            brinkbit.request( './', ( error, response ) => {
+            this.brinkbit.request( './', ( error, response ) => {
                 expect( error ).to.not.exist;
                 expect( response.body ).to.deep.equal({ success: true });
                 done();
@@ -68,7 +68,7 @@ describe( 'brinkbit.js', function() {
         });
 
         it( 'should support object with success callback signature', function( done ) {
-            brinkbit.request({
+            this.brinkbit.request({
                 uri: './',
                 success: ( response ) => {
                     expect( response.body ).to.deep.equal({ success: true });
@@ -78,29 +78,25 @@ describe( 'brinkbit.js', function() {
         });
 
         it( 'should emit a "response" event', function( done ) {
-            brinkbit.on( 'response', ( event ) => {
+            this.brinkbit.on( 'response', ( event ) => {
                 expect( event ).to.be.an.instanceOf( Brinkbit.BrinkbitEvent );
                 expect( event ).to.have.property( 'type' ).and.equal( 'response' );
                 expect( event.response.body ).to.deep.equal({ success: true });
                 done();
             });
-            brinkbit.request( './' );
+            this.brinkbit.request( './' );
         });
     });
 
     describe( 'login', function() {
-        const brinkbit = new Brinkbit({
-            base: 'http://localhost:3010/api/',
-            appId: 'test',
+        before( function() {
+            this.brinkbit = new Brinkbit( env.client.config );
         });
 
         it( 'should login the user and return a new User object', function() {
-            return brinkbit.login({
-                username: 'Violet',
-                password: 'FireballsAreTheWorst',
-            })
-            .then( function( user ) {
-                expect( user ).to.be.an.instanceOf( brinkbit.User );
+            return this.brinkbit.login( env.user )
+            .then(( user ) => {
+                expect( user ).to.be.an.instanceOf( this.brinkbit.User );
             });
         });
     });
