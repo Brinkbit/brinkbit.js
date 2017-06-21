@@ -8,19 +8,11 @@ const path = require( 'path' );
 const fse = bluebird.promisifyAll( fsExtra );
 
 fse.readFileAsync( path.resolve( __dirname, '../dist/brinkbit.js' ), 'utf8' )
-.then(( code ) => {
-    const toplevel = UglifyJS.parse( code );
-    toplevel.figure_out_scope();
-    const compressedAst = toplevel.transform(
-        UglifyJS.Compressor() // eslint-disable-line new-cap
-    );
-    compressedAst.figure_out_scope();
-    compressedAst.compute_char_frequency();
-    compressedAst.mangle_names();
-    const stream = UglifyJS.OutputStream(); // eslint-disable-line new-cap
-    compressedAst.print( stream );
-    return fse.writeFileAsync( path.resolve( __dirname, '../dist/brinkbit.min.js' ), stream.toString());
-})
+.then( code =>
+    fse.writeFileAsync( path.resolve( __dirname, '../dist/brinkbit.min.js' ), UglifyJS.minify( code, {
+        warnings: 'verbose',
+    }).code )
+)
 .then(() => {
     process.exit( 0 );
 })
