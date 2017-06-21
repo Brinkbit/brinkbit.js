@@ -14,6 +14,7 @@ class Plugin {
         this.read = [];
         this.write = [];
         this.data = defaults || {};
+        this.middleware = {};
         if ( config ) {
             validate.constructor( config, {
                 _id: {
@@ -47,10 +48,12 @@ class Plugin {
         if ( options.body ) {
             this.set( options.body );
         }
-        const body = pick( this.data, this.write );
-        const method = options.method || ( this.id ? 'put' : 'post' );
-        const promise = this.validate( method, body )
-        .then(() => this.brinkbit[`_${method}`]( options.uri || this.getUrl( method ), { body }))
+        options.body = pick( this.data, this.write );
+        options.method = options.method || ( this.id ? 'put' : 'post' );
+        options.uri = options.uri || this.getUrl( options.method );
+        const opts = this.processMiddleware( 'save', options );
+        const promise = this.validate( opts.method, opts.body )
+        .then(() => this.brinkbit._request( opts ))
         .then(( response ) => {
             this.set( response.body );
             if ( response.body._id ) {
@@ -84,6 +87,11 @@ class Plugin {
         else if ( this.write.includes( attr )) {
             this.data[attr] = value;
         }
+    }
+
+    processMiddleware( method, opts ) {
+        return typeof this.middleware === 'object' &&
+            typeof this.middleware[method] === 'function' ? this.middleware[method]( opts ) : opts;
     }
 
     static create( ...args ) {

@@ -4,7 +4,7 @@ const normalizeArguments = require( '../../src/validate/normalizeArguments.js' )
 
 describe( 'normalizeArguments', function() {
     it( 'should expose a function', function() {
-        expect( normalizeArguments ).to.be.a.function;
+        expect( normalizeArguments ).to.be.a( 'function' );
     });
 
     it( 'should pass through an object', function() {

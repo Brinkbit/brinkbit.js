@@ -1,25 +1,4 @@
 {
-    "env": {
-        "mocha": true
-    },
-    "globals": {
-        "expect": true,
-        "sinon": true
-    },
-    "rules": {
-        "no-unused-expressions": 0,
-        "func-names": 0,
-        "space-before-function-paren": [2, "never"],
-        "max-nested-callbacks": 0,
-        "import/no-extraneous-dependencies": [
-            "error",
-            {
-                "devDependencies": true,
-                "optionalDependencies": true,
-                "peerDependencies": true
-            }
-        ],
-        "prefer-arrow-callback": "off",
-        "global-require": "off"
-    }
+    "extends": "brinkbit/test",
+    "root": true
 }

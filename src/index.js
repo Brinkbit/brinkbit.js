@@ -2,7 +2,6 @@ global.Promise = require( 'bluebird' );
 const eventEmitter = require( 'event-emitter' );
 const request = Promise.promisify( require( 'browser-request' ));
 const merge = require( 'lodash.merge' );
-const pick = require( 'lodash.pick' );
 const resolveUrl = require( 'resolve-url' );
 const store = require( 'store' );
 
@@ -19,7 +18,7 @@ class Brinkbit {
             base: {
                 dataType: 'string',
             },
-            appId: {
+            gameId: {
                 dataType: 'string',
                 presence: true,
             },
@@ -37,15 +36,15 @@ class Brinkbit {
     }
 
     store( key, value ) {
-        store.set( `${this.appId}_${key}`, value );
+        store.set( `${this.gameId}_${key}`, value );
     }
 
     retrieve( key ) {
-        return store.get( `${this.appId}_${key}` );
+        return store.get( `${this.gameId}_${key}` );
     }
 
     remove( key ) {
-        return store.remove( `${this.appId}_${key}` );
+        return store.remove( `${this.gameId}_${key}` );
     }
 
     request( ...args ) {
@@ -94,21 +93,26 @@ class Brinkbit {
             }),
         ])
         .then(() => {
-            const body = pick( options, [ 'email', 'username', 'password' ]);
+            const body = {
+                grant_type: 'password',
+                username: options.username || options.email,
+                password: options.password,
+                scope: 'player.basic_info:read player.basic_info:write data:read:write',
+            };
             return this._post({
-                uri: './login/',
+                uri: './token/',
                 body,
             });
         })
         .then(( response ) => {
             this.store( 'token', response.body.access_token );
             this.store( 'user', response.body.user );
-            const user = new this.User({ _id: response.body.user });
-            return user.fetch()
-            .then(() => {
-                this.emit( 'login', new BrinkbitEvent( 'login', user ));
-                return user;
-            });
+            return this._get( './playerinfo/' );
+        })
+        .then(( response ) => {
+            const user = new this.User( response.body );
+            this.emit( 'login', new BrinkbitEvent( 'login', user ));
+            return user;
         });
         return normalizeResponse( promise, options );
     }
@@ -144,9 +148,10 @@ class Brinkbit {
             options.uri = this.resolveUrl( options.uri );
             if ( typeof options.body === 'object' ) {
                 options.body = JSON.stringify( options.body );
+                options.json = true;
             }
             const token = this.retrieve( 'token' );
-            if ( token ) {
+            if ( token && options.passToken !== false ) {
                 options.headers = merge( options.headers, {
                     Authorization: `Bearer ${token}`,
                 });

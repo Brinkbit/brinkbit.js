@@ -4,7 +4,7 @@ const validate = require( '../../src/validate/index.js' );
 
 describe( 'validate', function() {
     it( 'should expose a function', function() {
-        expect( validate ).to.be.a.function;
+        expect( validate ).to.be.a( 'function' );
     });
 
     it( 'should resolve on valid input', function() {

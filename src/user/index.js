@@ -23,14 +23,32 @@ function initialize( brinkbit ) {
                 });
                 this.set( config );
             }
+            this.middleware.save = this.saveMiddleware.bind( this );
+        }
+
+        login( password ) {
+            return this.brinkbit.login({
+                username: this.data.username,
+                email: this.data.email,
+                password: password || this.data.password,
+            });
+        }
+
+        saveMiddleware( options ) {
+            if ( !this.id ) options.passToken = false;
+            else {
+                options.body.username = undefined;
+                options.body.password = undefined;
+            }
+            return options;
         }
 
         getUrl( method ) {
             switch ( method ) {
                 case 'post':
-                    return './users/';
+                    return './players/';
                 default:
-                    return `./users/${this.id}/`;
+                    return `./players/${this.id}/`;
             }
         }
 
@@ -59,12 +77,14 @@ function initialize( brinkbit ) {
                     return validate( data, {
                         username: {
                             dataType: 'string',
+                            presence: false,
                         },
                         email: {
                             dataType: 'string',
                         },
                         password: {
                             dataType: 'string',
+                            presence: false,
                         },
                     });
                 default:

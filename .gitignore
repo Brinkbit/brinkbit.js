@@ -23,3 +23,6 @@ coverage
 
 # Dependency directories
 node_modules
+
+# Environment
+env.js
