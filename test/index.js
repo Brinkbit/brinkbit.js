@@ -120,9 +120,9 @@ describe( 'brinkbit.js', function() {
 
         it( 'should store player and token if stayLoggedIn is true', function() {
             return this.brinkbit.login( merge({ stayLoggedIn: true }, env.player ))
-            .then(() => {
-                expect( this.brinkbit.retrieve( 'token' )).to.be.a( 'string' );
-                expect( this.brinkbit.retrieve( 'player' )).to.be.an( 'object' );
+            .then(( player ) => {
+                expect( this.brinkbit.retrieve( 'token' )).to.equal( player.token );
+                expect( this.brinkbit.retrieve( 'playerId' )).to.equal( player.id );
             });
         });
     });

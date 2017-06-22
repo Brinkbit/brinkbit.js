@@ -30,6 +30,11 @@ class Brinkbit {
         this.base = typeof config.base !== 'string' ? '/api' : config.base;
         this.parse = config.parse ? config.parse : JSON.parse;
         this.use( Player );
+        const storedToken = this.retrieve( 'token' );
+        if ( storedToken ) {
+            this.Player.primary = new this.Player({ _id: this.retrieve( 'playerId' ) });
+            this.Player.primary.token = storedToken;
+        }
     }
 
     resolveUrl( uri ) {
@@ -126,7 +131,7 @@ class Brinkbit {
             if ( !this.Player.primary ) {
                 this.Player.primary = player;
                 if ( options.stayLoggedIn ) {
-                    this.store( 'player', player.data );
+                    this.store( 'playerId', player.id );
                 }
             }
             this.emit( 'login', new BrinkbitEvent( 'login', player ));
@@ -138,14 +143,14 @@ class Brinkbit {
     logout() {
         this.Player.primary = undefined;
         this.remove( 'token' );
-        this.remove( 'player' );
+        this.remove( 'playerId' );
     }
 
     promote( player ) {
         this.Player.primary = player;
         if ( player.stayLoggedIn ) {
-            this.store( 'token', player.id );
-            this.store( 'player', player.data );
+            this.store( 'token', player.token );
+            this.store( 'playerId', player.id );
         }
     }
 
