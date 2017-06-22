@@ -94,6 +94,10 @@ describe( 'brinkbit.js', function() {
             this.brinkbit = new Brinkbit( env.client.config );
         });
 
+        afterEach( function() {
+            return this.brinkbit.logout();
+        });
+
         it( 'should login the player and return a new Player object', function() {
             return this.brinkbit.login( env.player )
             .then(( player ) => {
@@ -104,7 +108,8 @@ describe( 'brinkbit.js', function() {
         });
 
         it( 'should log additonal players in as secondary players', function() {
-            return this.brinkbit.login( env.player2 )
+            return this.brinkbit.login( env.player )
+            .then(() => this.brinkbit.login( env.player2 ))
             .then(( player ) => {
                 expect( player ).to.be.an.instanceOf( this.brinkbit.Player );
                 expect( player.data.username ).to.equal( env.player2.username );
@@ -114,11 +119,10 @@ describe( 'brinkbit.js', function() {
         });
 
         it( 'should store player and token if stayLoggedIn is true', function() {
-            const brinkbit = new Brinkbit( merge({ stayLoggedIn: true }, env.client.config ));
-            return brinkbit.login( env.player )
+            return this.brinkbit.login( merge({ stayLoggedIn: true }, env.player ))
             .then(( player ) => {
-                expect( brinkbit.retrieve( 'token' )).to.be.a( 'string' );
-                expect( brinkbit.retrieve( 'player' )).to.be.an( 'object' );
+                expect( this.brinkbit.retrieve( 'token' )).to.equal( player.token );
+                expect( this.brinkbit.retrieve( 'playerId' )).to.equal( player.id );
             });
         });
     });
@@ -126,7 +130,7 @@ describe( 'brinkbit.js', function() {
     describe( 'logout', function() {
         before( function() {
             this.brinkbit = new Brinkbit( env.client.config );
-            return this.brinkbit.login( env.player )
+            return this.brinkbit.login( env.player );
         });
 
         it( 'should log out the primary player', function() {

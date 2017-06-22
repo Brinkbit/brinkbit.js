@@ -25,15 +25,16 @@ class Brinkbit {
             parse: {
                 dataType: 'function',
             },
-            stayLoggedIn: {
-                dataType: 'boolean',
-            },
         });
         this.gameId = config.gameId;
         this.base = typeof config.base !== 'string' ? '/api' : config.base;
         this.parse = config.parse ? config.parse : JSON.parse;
-        this.stayLoggedIn = config.stayLoggedIn;
         this.use( Player );
+        const storedToken = this.retrieve( 'token' );
+        if ( storedToken ) {
+            this.Player.primary = new this.Player({ _id: this.retrieve( 'playerId' ) });
+            this.Player.primary.token = storedToken;
+        }
     }
 
     resolveUrl( uri ) {
@@ -88,6 +89,9 @@ class Brinkbit {
                 password: {
                     presence: true,
                 },
+                stayLoggedIn: {
+                    dataType: 'boolean',
+                },
             }),
             validate( options, {
                 username: {
@@ -95,6 +99,9 @@ class Brinkbit {
                 },
                 password: {
                     presence: true,
+                },
+                stayLoggedIn: {
+                    dataType: 'boolean',
                 },
             }),
         ])
@@ -112,18 +119,19 @@ class Brinkbit {
         })
         .then(( response ) => {
             token = response.body.access_token;
-            if ( this.stayLoggedIn ) {
+            if ( options.stayLoggedIn ) {
                 this.store( 'token', token );
             }
             return this._get( './playerinfo/', token );
         })
         .then(( response ) => {
             const player = new this.Player( response.body );
+            player.stayLoggedIn = options.stayLoggedIn;
             player.token = token;
             if ( !this.Player.primary ) {
                 this.Player.primary = player;
-                if ( this.stayLoggedIn ) {
-                    this.store( 'player', player.data );
+                if ( options.stayLoggedIn ) {
+                    this.store( 'playerId', player.id );
                 }
             }
             this.emit( 'login', new BrinkbitEvent( 'login', player ));
@@ -135,14 +143,14 @@ class Brinkbit {
     logout() {
         this.Player.primary = undefined;
         this.remove( 'token' );
-        this.remove( 'player' );
+        this.remove( 'playerId' );
     }
 
     promote( player ) {
         this.Player.primary = player;
-        if ( this.stayLoggedIn ) {
-            this.store( 'token', player.id );
-            this.store( 'player', player.data );
+        if ( player.stayLoggedIn ) {
+            this.store( 'token', player.token );
+            this.store( 'playerId', player.id );
         }
     }
 
