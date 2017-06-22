@@ -2,47 +2,47 @@
 // create a new Brinkbit instance
 const brinkbit = new Brinkbit({
     base: '/api', // the route of your application on which the server-side sdk is listening
-    appId: 'xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx', // your unique app id (can be retrieved from brinkbit console)
+    gameId: 'xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx', // your unique game id (can be retrieved from brinkbit console)
 });
 ```
 
 ```javascript
-// create a new user
-const user = new brinkbit.User({
+// create a new player
+const player = new brinkbit.Player({
     username: 'Violet',
     email: 'violet@trialbyfireball.com',
     password: 'FireballsAreTheWorst',
 });
-user.save()
+player.save()
 .then(() => {
-    // user has been created on server
+    // player has been created on server
 });
 ```
 
 ```javascript
 brinkbit.on( 'login', ( event ) => {
-    console.log( event.user );
+    console.log( event.player );
 });
 
-// login a user
+// login a player
 brinkbit.login({
     username: 'Violet', // can also be email
     password: 'FireballsAreTheWorst',
 })
-.then(( user ) => {
-    // user is an authenticated user object
+.then(( player ) => {
+    // player is an authenticated player object
 });
 ```
 
 ## Low level requests
 
 ```javascript
-brinkbit.get( '/users/12345/' );
+brinkbit.get( '/players/12345/' );
 ```
 
 ```javascript
 brinkbit.put({
-    uri: '/users/12345/',
+    uri: '/players/12345/',
     data: {
         email: 'violet2@trialbyfireball.com',
     },
