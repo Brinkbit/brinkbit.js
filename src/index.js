@@ -25,14 +25,10 @@ class Brinkbit {
             parse: {
                 dataType: 'function',
             },
-            stayLoggedIn: {
-                dataType: 'boolean',
-            },
         });
         this.gameId = config.gameId;
         this.base = typeof config.base !== 'string' ? '/api' : config.base;
         this.parse = config.parse ? config.parse : JSON.parse;
-        this.stayLoggedIn = config.stayLoggedIn;
         this.use( Player );
     }
 
@@ -88,6 +84,9 @@ class Brinkbit {
                 password: {
                     presence: true,
                 },
+                stayLoggedIn: {
+                    dataType: 'boolean',
+                },
             }),
             validate( options, {
                 username: {
@@ -95,6 +94,9 @@ class Brinkbit {
                 },
                 password: {
                     presence: true,
+                },
+                stayLoggedIn: {
+                    dataType: 'boolean',
                 },
             }),
         ])
@@ -112,17 +114,18 @@ class Brinkbit {
         })
         .then(( response ) => {
             token = response.body.access_token;
-            if ( this.stayLoggedIn ) {
+            if ( options.stayLoggedIn ) {
                 this.store( 'token', token );
             }
             return this._get( './playerinfo/', token );
         })
         .then(( response ) => {
             const player = new this.Player( response.body );
+            player.stayLoggedIn = options.stayLoggedIn;
             player.token = token;
             if ( !this.Player.primary ) {
                 this.Player.primary = player;
-                if ( this.stayLoggedIn ) {
+                if ( options.stayLoggedIn ) {
                     this.store( 'player', player.data );
                 }
             }
@@ -140,7 +143,7 @@ class Brinkbit {
 
     promote( player ) {
         this.Player.primary = player;
-        if ( this.stayLoggedIn ) {
+        if ( player.stayLoggedIn ) {
             this.store( 'token', player.id );
             this.store( 'player', player.data );
         }
