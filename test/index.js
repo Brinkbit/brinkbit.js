@@ -1,4 +1,5 @@
 const expect = require( 'chai' ).expect;
+const merge = require( 'lodash.merge' );
 
 const Brinkbit = require( '../src' );
 const ValidationError = require( '../src/validate/validationError' );
@@ -39,7 +40,7 @@ describe( 'brinkbit.js', function() {
             gameId: 'valid',
         });
         expect( brinkbit ).to.be.an.instanceOf( Brinkbit );
-        expect( brinkbit.User ).to.be.a( 'function' );
+        expect( brinkbit.Player ).to.be.a( 'function' );
         brinkbit = new Brinkbit({
             gameId: 'valid',
             base: '/valid',
@@ -93,13 +94,62 @@ describe( 'brinkbit.js', function() {
             this.brinkbit = new Brinkbit( env.client.config );
         });
 
-        it( 'should login the user and return a new User object', function() {
-            return this.brinkbit.login( env.user )
-            .then(( user ) => {
-                expect( user ).to.be.an.instanceOf( this.brinkbit.User );
+        it( 'should login the player and return a new Player object', function() {
+            return this.brinkbit.login( env.player )
+            .then(( player ) => {
+                expect( player ).to.be.an.instanceOf( this.brinkbit.Player );
+                expect( player.data.username ).to.equal( env.player.username );
+                expect( this.brinkbit.Player.primary ).to.equal( player );
+            });
+        });
+
+        it( 'should log additonal players in as secondary players', function() {
+            return this.brinkbit.login( env.player2 )
+            .then(( player ) => {
+                expect( player ).to.be.an.instanceOf( this.brinkbit.Player );
+                expect( player.data.username ).to.equal( env.player2.username );
+                expect( this.brinkbit.Player.primary ).to.not.equal( player );
+                expect( this.brinkbit.Player.primary.data.username ).to.equal( env.player.username );
+            });
+        });
+
+        it( 'should store player and token if stayLoggedIn is true', function() {
+            const brinkbit = new Brinkbit( merge({ stayLoggedIn: true }, env.client.config ));
+            return brinkbit.login( env.player )
+            .then(( player ) => {
+                expect( brinkbit.retrieve( 'token' )).to.be.a( 'string' );
+                expect( brinkbit.retrieve( 'player' )).to.be.an( 'object' );
             });
         });
     });
 
-    require( './user' );
+    describe( 'logout', function() {
+        before( function() {
+            this.brinkbit = new Brinkbit( env.client.config );
+            return this.brinkbit.login( env.player )
+        });
+
+        it( 'should log out the primary player', function() {
+            this.brinkbit.logout();
+            expect( this.brinkbit.Player.primary ).to.not.exist;
+        });
+    });
+
+    describe( 'promote', function() {
+        before( function() {
+            this.brinkbit = new Brinkbit( env.client.config );
+            return this.brinkbit.login( env.player )
+            .then(() => this.brinkbit.login( env.player2 ))
+            .then(( player ) => {
+                this.player2 = player;
+            });
+        });
+
+        it( 'should promote the player to primary', function() {
+            this.brinkbit.promote( this.player2 );
+            expect( this.brinkbit.Player.primary ).to.equal( this.player2 );
+        });
+    });
+
+    require( './player' );
 });

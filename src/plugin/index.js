@@ -33,8 +33,10 @@ class Plugin {
 
     fetch( ...args ) {
         const options = normalizeArguments( ...args );
-        const promise = this.validate( 'get' )
-        .then(() => this.brinkbit._get( options.uri || this.getUrl( 'get' )))
+        options.token = this.token;
+        options.uri = options.uri || this.getUrl( 'get' );
+        const promise = this.validate( 'get', options )
+        .then(() => this.brinkbit._get( options ))
         .then(( response ) => {
             merge( this.data, pick( response.body, this.read ));
             this.emit( 'fetch', new BrinkbitEvent( 'fetch', response ));
@@ -48,6 +50,7 @@ class Plugin {
         if ( options.body ) {
             this.set( options.body );
         }
+        options.token = this.token;
         options.body = pick( this.data, this.write );
         options.method = options.method || ( this.id ? 'put' : 'post' );
         options.uri = options.uri || this.getUrl( options.method );

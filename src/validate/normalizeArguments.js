@@ -6,6 +6,9 @@ module.exports = function normalizeArguments( ...args ) {
     else if ( typeof args[1] === 'object' ) {
         options = args[1];
     }
+    else if ( typeof args[1] === 'string' ) {
+        options.token = args[1];
+    }
     if ( typeof args[0] === 'string' ) {
         options.uri = args[0];
     }

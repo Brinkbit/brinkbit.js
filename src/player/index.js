@@ -1,9 +1,12 @@
+const merge = require( 'lodash.merge' );
+
 const validate = require( '../validate' );
 const ValidationError = require( '../validate/validationError' );
+const normalizeArguments = require( '../validate/normalizeArguments' );
 const Plugin = require( '../plugin' );
 
 function initialize( brinkbit ) {
-    class User extends Plugin {
+    class Player extends Plugin {
 
         constructor( config ) {
             super( brinkbit, {}, config );
@@ -21,17 +24,31 @@ function initialize( brinkbit ) {
                         dataType: 'string',
                     },
                 });
-                this.set( config );
+                this.data = config;
             }
             this.middleware.save = this.saveMiddleware.bind( this );
         }
 
-        login( password ) {
-            return this.brinkbit.login({
-                username: this.data.username,
-                email: this.data.email,
-                password: password || this.data.password,
+        login( ...args ) {
+            const options = normalizeArguments( ...args );
+            options.password = options.uri;
+            options.uri = undefined;
+            return this.brinkbit.login( merge({}, this.data, options ))
+            .then(( user ) => {
+                this.token = user.token;
+                return this;
             });
+        }
+
+        logout() {
+            this.token = undefined;
+            if ( this.isPrimary ) {
+                this.brinkbit.logout();
+            }
+        }
+
+        promote() {
+            this.brinkbit.promotePlayer( this );
         }
 
         saveMiddleware( options ) {
@@ -96,10 +113,10 @@ function initialize( brinkbit ) {
 
     }
 
-    return User;
+    return Player;
 }
 
 module.exports = {
-    name: 'User',
+    name: 'Player',
     initialize,
 };
