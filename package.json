@@ -2,12 +2,13 @@
   "name": "brinkbit.js",
   "version": "0.1.0",
   "description": "Javascript Brinkbit SDK",
-  "main": "src/index.js",
+  "main": "dist/brinkbit.js",
   "scripts": {
     "start": "node test/mockServer/index.js -d",
     "test": "cross-env NODE_ENV=test karma start",
     "build": "npm run build:dev; npm run build:minify",
     "build:dev": "cross-env NODE_ENV=build ./node_modules/.bin/webpack --progress --debug --profile",
+    "watch": "./node_modules/.bin/webpack --progress --colors --watch",
     "build:minify": "node ./scripts/minify.js"
   },
   "repository": {

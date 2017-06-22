@@ -10,7 +10,7 @@ const normalizeResponse = require( './validate/normalizeResponse' );
 const validate = require( './validate' );
 const BrinkbitEvent = require( './events' );
 
-const User = require( './user' );
+const Player = require( './player' );
 
 class Brinkbit {
     constructor( config ) {
@@ -25,10 +25,15 @@ class Brinkbit {
             parse: {
                 dataType: 'function',
             },
+            stayLoggedIn: {
+                dataType: 'boolean',
+            },
         });
+        this.gameId = config.gameId;
         this.base = typeof config.base !== 'string' ? '/api' : config.base;
         this.parse = config.parse ? config.parse : JSON.parse;
-        this.use( User );
+        this.stayLoggedIn = config.stayLoggedIn;
+        this.use( Player );
     }
 
     resolveUrl( uri ) {
@@ -74,6 +79,7 @@ class Brinkbit {
 
     login( ...args ) {
         const options = normalizeArguments( ...args );
+        let token;
         const promise = Promise.any([
             validate( options, {
                 email: {
@@ -105,27 +111,39 @@ class Brinkbit {
             });
         })
         .then(( response ) => {
-            this.store( 'token', response.body.access_token );
-            this.store( 'user', response.body.user );
-            return this._get( './playerinfo/' );
+            token = response.body.access_token;
+            if ( this.stayLoggedIn ) {
+                this.store( 'token', token );
+            }
+            return this._get( './playerinfo/', token );
         })
         .then(( response ) => {
-            const user = new this.User( response.body );
-            this.emit( 'login', new BrinkbitEvent( 'login', user ));
-            return user;
+            const player = new this.Player( response.body );
+            player.token = token;
+            if ( !this.Player.primary ) {
+                this.Player.primary = player;
+                if ( this.stayLoggedIn ) {
+                    this.store( 'player', player.data );
+                }
+            }
+            this.emit( 'login', new BrinkbitEvent( 'login', player ));
+            return player;
         });
         return normalizeResponse( promise, options );
     }
 
-    logout( ...args ) {
-        const options = normalizeArguments( ...args );
-        const promise = this._get( './logout/' )
-        .then(() => {
-            this.remove( 'token' );
-            this.remove( 'user' );
-            this.emit( 'logout', new BrinkbitEvent( 'logout' ));
-        });
-        return normalizeResponse( promise, options );
+    logout() {
+        this.Player.primary = undefined;
+        this.remove( 'token' );
+        this.remove( 'player' );
+    }
+
+    promote( player ) {
+        this.Player.primary = player;
+        if ( this.stayLoggedIn ) {
+            this.store( 'token', player.id );
+            this.store( 'player', player.data );
+        }
     }
 
     use( plugin ) {
@@ -150,7 +168,7 @@ class Brinkbit {
                 options.body = JSON.stringify( options.body );
                 options.json = true;
             }
-            const token = this.retrieve( 'token' );
+            const token = options.token || this.retrieve( 'token' );
             if ( token && options.passToken !== false ) {
                 options.headers = merge( options.headers, {
                     Authorization: `Bearer ${token}`,
