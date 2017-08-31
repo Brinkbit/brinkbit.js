@@ -57,7 +57,7 @@ describe( 'Player', function() {
     describe( 'player.save', function() {
         it( 'should create a new player if no id', function() {
             const rand = uuid.v4().slice( 0, 5 );
-            const username = `Fireball_${rand}`;
+            const username = `fireball_${rand}`;
             const email = `fireball${rand}@trialbyfireball.com`;
             this.player = new this.brinkbit.Player({
                 username,
@@ -90,7 +90,7 @@ describe( 'Player', function() {
     describe( 'player.create', function() {
         it( 'should create and save a new user', function() {
             const rand = uuid.v4().slice( 0, 5 );
-            const username = `Fireball_${rand}`;
+            const username = `fireball_${rand}`;
             const email = `fireball${rand}@trialbyfireball.com`;
             return this.brinkbit.Player.create({
                 username,

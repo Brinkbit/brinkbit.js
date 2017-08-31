@@ -4,8 +4,9 @@
   "description": "Javascript Brinkbit SDK",
   "main": "dist/brinkbit.js",
   "scripts": {
-    "start": "node test/mockServer/index.js -d",
-    "test": "cross-env NODE_ENV=test karma start",
+    "start": "./node_modules/.bin/pm2 start test/mockServer/index.js --name='mockServer'",
+    "stop": "./node_modules/.bin/pm2 stop mockServer",
+    "test": "yarn start; cross-env NODE_ENV=test karma start; yarn stop;",
     "build": "npm run build:dev; npm run build:minify",
     "build:dev": "cross-env NODE_ENV=build ./node_modules/.bin/webpack --progress --debug --profile",
     "watch": "./node_modules/.bin/webpack --progress --colors --watch",
@@ -69,6 +70,7 @@
     "event-emitter": "^0.3.5",
     "lodash.merge": "^4.6.0",
     "lodash.pick": "^4.4.0",
+    "pm2": "^2.6.1",
     "resolve-url": "^0.2.1",
     "store": "^2.0.12",
     "validate.js": "^0.11.1"

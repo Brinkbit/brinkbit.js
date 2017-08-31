@@ -8,5 +8,5 @@ app.use( bodyParser.json());
 app.use( bodyParser.urlencoded({ extended: true }));
 app.use( '/api', new Brinkbit( env.server.config ).createMiddleware());
 app.listen( env.server.port, () => {
-    console.log( 'server started' );
+    console.log( 'server started on port', env.server.port );
 });

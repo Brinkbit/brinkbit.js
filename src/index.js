@@ -188,7 +188,8 @@ class Brinkbit {
                     response.body = this.parse( response.body );
                 }
                 if ( response.statusCode >= 400 ) {
-                    return Promise.reject( new Error( response.body ));
+                    this.emit( 'error', response.body );
+                    return Promise.reject( new Error( response.body.description ));
                 }
                 this.emit( 'response', new BrinkbitEvent( 'response', response ));
                 return response;
