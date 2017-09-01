@@ -12,7 +12,7 @@ module.exports = function conf( config ) {
             'test/index.js': [ 'webpack', 'sourcemap' ],
         },
 
-        reporters: [ 'mocha', 'coverage' ],
+        reporters: [ 'coverage', process.env.KARMA_REPORTER ],
 
         webpack,
 
@@ -27,10 +27,12 @@ module.exports = function conf( config ) {
             dir: 'coverage/',
         },
 
+        logLevel: config.LOG_DISABLE,
+
         client: {
-            captureConsole: true,
+            captureConsole: false,
             mocha: {
-                bail: true,
+                bail: false,
             },
         },
 
@@ -42,7 +44,8 @@ module.exports = function conf( config ) {
         },
 
         webpackMiddleware: {
-            stats: 'errors-only',
+            quiet: true,
+            stats: 'none',
         },
     });
 };

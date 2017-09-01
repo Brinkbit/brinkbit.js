@@ -2745,6 +2745,10 @@ karma-coverage@^1.1.1:
     minimatch "^3.0.0"
     source-map "^0.5.1"
 
+karma-json-reporter@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/karma-json-reporter/-/karma-json-reporter-1.2.0.tgz#e8daa3a5271cd0ba7aa4975d13d74bdb4685bf6f"
+
 karma-mocha-reporter@^2.2.3:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/karma-mocha-reporter/-/karma-mocha-reporter-2.2.3.tgz#04fdda45a1d9697a73871c7472223c581701ab20"
