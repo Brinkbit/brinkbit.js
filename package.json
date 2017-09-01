@@ -6,7 +6,8 @@
   "scripts": {
     "start": "./node_modules/.bin/pm2 start test/mockServer/index.js --name='mockServer'",
     "stop": "./node_modules/.bin/pm2 stop mockServer",
-    "test": "yarn start; cross-env NODE_ENV=test karma start; yarn stop;",
+    "test": "yarn start; cross-env KARMA_REPORTER=mocha NODE_ENV=test karma start; yarn stop;",
+    "karma": "cross-env KARMA_REPORTER=json NODE_ENV=test karma start",
     "build": "npm run build:dev; npm run build:minify",
     "build:dev": "cross-env NODE_ENV=build ./node_modules/.bin/webpack --progress --debug --profile",
     "watch": "./node_modules/.bin/webpack --progress --colors --watch",
@@ -53,6 +54,7 @@
     "karma": "^1.7.0",
     "karma-chrome-launcher": "^2.1.1",
     "karma-coverage": "^1.1.1",
+    "karma-json-reporter": "^1.2.0",
     "karma-mocha": "^1.3.0",
     "karma-mocha-reporter": "^2.2.3",
     "karma-sourcemap-loader": "^0.3.7",
