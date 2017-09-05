@@ -196,6 +196,26 @@ class Brinkbit {
         }));
     }
 
+    validateResetToken( data ) {
+        if ( typeof data === 'string' ) {
+            data = { token: data };
+        }
+        data.gameId = data.gameId || this.gameId;
+        return validate( data, {
+            gameId: {
+                dataType: 'string',
+                presence: true,
+            },
+            token: {
+                dataType: 'string',
+                presence: true,
+            },
+        })
+        .then(() => this.get({
+            uri: `./reset/?gameId=${data.gameId}&token=${data.token}`,
+        }));
+    }
+
     promote( player ) {
         this.Player.primary = player;
         if ( player.stayLoggedIn ) {
@@ -234,7 +254,7 @@ class Brinkbit {
             }
             return request( options )
             .then(( response ) => {
-                if ( typeof response.body === 'string' ) {
+                if ( typeof response.body === 'string' && response.body !== '' ) {
                     response.body = this.parse( response.body );
                 }
                 if ( response.statusCode >= 400 ) {

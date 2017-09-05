@@ -58,7 +58,10 @@ function initialize( brinkbit ) {
         }
 
         saveMiddleware( options ) {
-            if ( !this.id ) options.passToken = false;
+            if ( !this.id ) {
+                options.passToken = false;
+                options.body.gameId = options.body.gameId || this.brinkbit.gameId;
+            }
             else {
                 options.body.username = undefined;
                 options.body.password = undefined;
