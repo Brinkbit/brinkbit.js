@@ -30,7 +30,7 @@ module.exports = function conf( config ) {
         logLevel: config.LOG_DISABLE,
 
         client: {
-            captureConsole: false,
+            captureConsole: process.env.KARMA_REPORTER === 'mocha',
             mocha: {
                 bail: false,
             },

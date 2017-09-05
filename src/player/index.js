@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+
 const merge = require( 'lodash.merge' );
 
 const validate = require( '../validate' );
@@ -49,6 +51,10 @@ function initialize( brinkbit ) {
 
         promote() {
             this.brinkbit.promotePlayer( this );
+        }
+
+        forgot( options ) {
+            return this.brinkbit.forgot( options || this.data );
         }
 
         saveMiddleware( options ) {

@@ -1,9 +1,11 @@
-const expect = require( 'chai' ).expect;
+const chai = require( 'chai' );
 const merge = require( 'lodash.merge' );
 
 const Brinkbit = require( '../src' );
 const ValidationError = require( '../src/validate/validationError' );
 const env = require( '../env' );
+
+const expect = chai.expect;
 
 describe( 'brinkbit.js', function() {
     require( './validate' );
@@ -152,6 +154,16 @@ describe( 'brinkbit.js', function() {
         it( 'should promote the player to primary', function() {
             this.brinkbit.promote( this.player2 );
             expect( this.brinkbit.Player.primary ).to.equal( this.player2 );
+        });
+    });
+
+    describe( 'forgot', function() {
+        before( function() {
+            this.brinkbit = new Brinkbit( env.client.config );
+        });
+
+        it( 'should respond with 200', function() {
+            return this.brinkbit.forgot({ username: env.player.username });
         });
     });
 
