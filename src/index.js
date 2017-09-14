@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+
 global.Promise = require( 'bluebird' );
 const eventEmitter = require( 'event-emitter' );
 const request = Promise.promisify( require( 'browser-request' ));
@@ -29,6 +31,11 @@ class Brinkbit {
         this.gameId = config.gameId;
         this.base = typeof config.base !== 'string' ? '/api' : config.base;
         this.parse = config.parse ? config.parse : JSON.parse;
+        this.scope = config.scope || [
+            'player.basic_info:read',
+            'player.basic_info:write',
+            'data:read:write',
+        ];
         this.use( Player );
         const storedToken = this.retrieve( 'token' );
         if ( storedToken ) {
@@ -110,7 +117,7 @@ class Brinkbit {
                 grant_type: 'password',
                 username: options.username || options.email,
                 password: options.password,
-                scope: 'player.basic_info:read player.basic_info:write data:read:write',
+                scope: this.scope.join( ' ' ),
             };
             return this._post({
                 uri: './token/',
@@ -144,6 +151,69 @@ class Brinkbit {
         this.Player.primary = undefined;
         this.remove( 'token' );
         this.remove( 'playerId' );
+    }
+
+    forgot( data ) {
+        if ( typeof data === 'string' ) {
+            data = { emailOrUsername: data };
+        }
+        data.gameId = data.gameId || this.gameId;
+        return Promise.any([
+            validate( data, {
+                gameId: {
+                    dataType: 'string',
+                    presence: true,
+                },
+                username: {
+                    dataType: 'string',
+                    presence: true,
+                },
+            }),
+            validate( data, {
+                gameId: {
+                    dataType: 'string',
+                    presence: true,
+                },
+                email: {
+                    dataType: 'string',
+                    presence: true,
+                },
+            }),
+            validate( data, {
+                gameId: {
+                    dataType: 'string',
+                    presence: true,
+                },
+                emailOrUsername: {
+                    dataType: 'string',
+                    presence: true,
+                },
+            }),
+        ])
+        .then(() => this.post({
+            uri: './forgot/',
+            body: data,
+        }));
+    }
+
+    validateResetToken( data ) {
+        if ( typeof data === 'string' ) {
+            data = { token: data };
+        }
+        data.gameId = data.gameId || this.gameId;
+        return validate( data, {
+            gameId: {
+                dataType: 'string',
+                presence: true,
+            },
+            token: {
+                dataType: 'string',
+                presence: true,
+            },
+        })
+        .then(() => this.get({
+            uri: `./reset/?gameId=${data.gameId}&token=${data.token}`,
+        }));
     }
 
     promote( player ) {
@@ -184,7 +254,7 @@ class Brinkbit {
             }
             return request( options )
             .then(( response ) => {
-                if ( typeof response.body === 'string' ) {
+                if ( typeof response.body === 'string' && response.body !== '' ) {
                     response.body = this.parse( response.body );
                 }
                 if ( response.statusCode >= 400 ) {
