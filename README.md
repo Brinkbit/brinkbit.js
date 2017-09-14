@@ -100,7 +100,7 @@ brinkbit.put({
 
 ## Links
 
-[![Github](media/footerGithub.png)](https://github.com/brinkbit/)
+[![Github](media/footerGitHub.png)](https://github.com/brinkbit/)
 [![Facebook](media/footerFacebook.png)](https://facebook.com/brinkbit/)
 [![Twitter](media/footerTwitter.png)](https://twitter.com/brinkbit/)
 [![LinkedIn](media/footerLinkedIn.png)](https://www.linkedin.com/company/brinkbit/)
