@@ -1,3 +1,45 @@
+# [![Brinkbit](media/header.png)](https://brinkbit.com)
+
+> fast, extensible, and scalable BaaS platform for game services, content management, live ops, and more
+
+This is the client-side javascript SDK for the [Brinkbit Game BaaS](https://brinkbit.com/).
+This repository includes installation instructions and basic examples.
+For full API documentation see [https://brinkbit.com/docs/](https://brinkbit.com/docs/).
+
+## Contents
+
+- [Installation](#installation)
+- [Examples](#examples)
+- [Links](#links)
+
+## Installation
+
+### Via npm
+
+```console
+$ npm init
+$ npm install --save brinkbit.js
+```
+
+### Via yarn
+
+```console
+$ yarn init
+$ yarn add brinkbit.js
+```
+
+### Via cdn
+
+Include the following script tag in your html:
+
+```html
+<script crossorigin src="https://unpkg.com/brinkbit.js/dist/brinkbit.min.js"></script>
+```
+
+## Examples
+
+### Initialize
+
 ```javascript
 // create a new Brinkbit instance
 const brinkbit = new Brinkbit({
@@ -5,6 +47,8 @@ const brinkbit = new Brinkbit({
     gameId: 'xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx', // your unique game id (can be retrieved from brinkbit console)
 });
 ```
+
+### Create a New Player
 
 ```javascript
 // create a new player
@@ -18,6 +62,8 @@ player.save()
     // player has been created on server
 });
 ```
+
+### Login
 
 ```javascript
 brinkbit.on( 'login', ( event ) => {
@@ -34,10 +80,13 @@ brinkbit.login({
 });
 ```
 
-## Low level requests
+### Low Level Requests
 
 ```javascript
-brinkbit.get( '/players/12345/' );
+brinkbit.get( '/players/12345/' )
+.then(( response ) => {
+    console.log( response );
+});
 ```
 
 ```javascript
@@ -48,3 +97,12 @@ brinkbit.put({
     },
 });
 ```
+
+## Links
+
+[![Github](media/footerGithub.png)](https://github.com/brinkbit/)
+[![Facebook](media/footerFacebook.png)](https://facebook.com/brinkbit/)
+[![Twitter](media/footerTwitter.png)](https://twitter.com/brinkbit/)
+[![LinkedIn](media/footerLinkedIn.png)](https://www.linkedin.com/company/brinkbit/)
+[![Google Plus](media/footerGooglePlus.png)](https://google.com/+brinkbit/)
+[![Medium](media/footerMedium.png)](https://medium.com/brinkbit/)
