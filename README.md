@@ -38,13 +38,32 @@ Include the following script tag in your html:
 
 ## Examples
 
+### Import
+
+CommonJS
+```javascript
+const Brinkbit = require( 'brinkbit.js' );
+```
+
+ES6
+```javascript
+import Brinkbit from 'brinkbit.js';
+```
+
 ### Initialize
 
 ```javascript
 // create a new Brinkbit instance
 const brinkbit = new Brinkbit({
-    base: '/api', // the route of your application on which the server-side sdk is listening
-    gameId: 'xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx', // your unique game id (can be retrieved from brinkbit console)
+    gameId: 'xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx', // your unique game id (can be retrieved from brinkbit control center)
+});
+```
+
+```javascript
+// create a new Brinkbit instance using custom proxy
+const brinkbit = new Brinkbit({
+    base: 'https://yourproxydomain.com/api/', // the route of your application on which the server-side sdk is listening
+    gameId: 'xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx', // your unique game id (can be retrieved from brinkbit control center)
 });
 ```
 
