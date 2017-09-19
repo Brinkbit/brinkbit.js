@@ -29,7 +29,7 @@ class Brinkbit {
             },
         });
         this.gameId = config.gameId;
-        this.base = typeof config.base !== 'string' ? '/api' : config.base;
+        this.base = typeof config.base !== 'string' ? `https://brinkbit.com/api/0.1/${this.gameId}` : config.base;
         this.parse = config.parse ? config.parse : JSON.parse;
         this.scope = config.scope || [
             'player.basic_info:read',
@@ -115,6 +115,7 @@ class Brinkbit {
         .then(() => {
             const body = {
                 grant_type: 'password',
+                client_id: this.gameId,
                 username: options.username || options.email,
                 password: options.password,
                 scope: this.scope.join( ' ' ),
@@ -200,19 +201,14 @@ class Brinkbit {
         if ( typeof data === 'string' ) {
             data = { token: data };
         }
-        data.gameId = data.gameId || this.gameId;
         return validate( data, {
-            gameId: {
-                dataType: 'string',
-                presence: true,
-            },
             token: {
                 dataType: 'string',
                 presence: true,
             },
         })
         .then(() => this.get({
-            uri: `./reset/?gameId=${data.gameId}&token=${data.token}`,
+            uri: `./reset/?token=${data.token}`,
         }));
     }
 
