@@ -33,6 +33,7 @@ module.exports = function conf( config ) {
             captureConsole: process.env.KARMA_REPORTER === 'mocha',
             mocha: {
                 bail: false,
+                timeout: 10000,
             },
         },
 

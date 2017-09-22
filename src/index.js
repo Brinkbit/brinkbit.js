@@ -2,7 +2,7 @@
 
 global.Promise = require( 'bluebird' );
 const eventEmitter = require( 'event-emitter' );
-const request = Promise.promisify( require( 'browser-request' ));
+const request = require( 'browser-request' );
 const merge = require( 'lodash.merge' );
 const resolveUrl = require( 'resolve-url' );
 const store = require( 'store' );
@@ -238,9 +238,9 @@ class Brinkbit {
         })
         .then(() => {
             options.uri = this.resolveUrl( options.uri );
+            options.json = true;
             if ( typeof options.body === 'object' ) {
                 options.body = JSON.stringify( options.body );
-                options.json = true;
             }
             const token = options.token || this.retrieve( 'token' );
             if ( token && options.passToken !== false ) {
@@ -248,17 +248,19 @@ class Brinkbit {
                     Authorization: `Bearer ${token}`,
                 });
             }
-            return request( options )
-            .then(( response ) => {
-                if ( typeof response.body === 'string' && response.body !== '' ) {
-                    response.body = this.parse( response.body );
-                }
-                if ( response.statusCode >= 400 ) {
-                    this.emit( 'error', response.body );
-                    return Promise.reject( new Error( response.body.description ));
-                }
-                this.emit( 'response', new BrinkbitEvent( 'response', response ));
-                return response;
+            return new Promise(( resolve, reject ) => {
+                request( options, ( err, xhr, body ) => {
+                    if (( err && !( err instanceof SyntaxError )) || xhr.statusCode >= 400 ) {
+                        this.emit( 'error', xhr );
+                        const error = new Error( 'HTTP error' );
+                        error.xhr = xhr;
+                        error.body = body;
+                        return reject( error );
+                    }
+                    xhr.body = body;
+                    this.emit( 'response', new BrinkbitEvent( 'response', xhr ));
+                    return resolve( xhr );
+                });
             });
         });
     }
