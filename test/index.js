@@ -157,36 +157,38 @@ describe( 'brinkbit.js', function() {
         });
     });
 
-    describe( 'forgot', function() {
-        before( function() {
-            this.brinkbit = new Brinkbit( env.client.config );
-        });
-
-        it( 'should respond with 200', function() {
-            this.timeout( 10000 );
-            return this.brinkbit.forgot({ username: env.player.username })
-            .then(() => this.brinkbit.get( '/getreset' ))
-            .then(( res ) => {
-                expect( res.body.data ).to.be.a.string;
+    if ( env.server.getreset ) {
+        describe( 'forgot', function() {
+            before( function() {
+                this.brinkbit = new Brinkbit( env.client.config );
             });
-        });
-    });
 
-    describe( 'validateResetToken', function() {
-        before( function() {
-            this.timeout( 10000 );
-            this.brinkbit = new Brinkbit( env.client.config );
-            return this.brinkbit.forgot({ username: env.player.username })
-            .then(() => this.brinkbit.get( '/getreset' ))
-            .then(( res ) => {
-                this.resetToken = res.body.data;
+            it( 'should respond with 200', function() {
+                this.timeout( 10000 );
+                return this.brinkbit.forgot({ username: env.player.username })
+                .then(() => this.brinkbit.get( '/getreset' ))
+                .then(( res ) => {
+                    expect( res.body.data ).to.be.a.string;
+                });
             });
         });
 
-        it( 'should respond with 200', function() {
-            return this.brinkbit.validateResetToken({ token: this.resetToken });
+        describe( 'validateResetToken', function() {
+            before( function() {
+                this.timeout( 10000 );
+                this.brinkbit = new Brinkbit( env.client.config );
+                return this.brinkbit.forgot({ username: env.player.username })
+                .then(() => this.brinkbit.get( '/getreset' ))
+                .then(( res ) => {
+                    this.resetToken = res.body.data;
+                });
+            });
+
+            it( 'should respond with 200', function() {
+                return this.brinkbit.validateResetToken({ token: this.resetToken });
+            });
         });
-    });
+    }
 
     require( './player' );
 });
