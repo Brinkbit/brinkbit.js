@@ -29,7 +29,8 @@ class Brinkbit {
             },
         });
         this.gameId = config.gameId;
-        this.base = typeof config.base !== 'string' ? `https://brinkbit.com/api/0.1/${this.gameId}` : config.base;
+        const domain = typeof config.base !== 'string' ? 'https://brinkbit.com/api/0.1/' : config.base;
+        this.base = `${domain}${domain.slice( -1 ) !== '/' ? '/' : ''}${this.gameId}`;
         this.parse = config.parse ? config.parse : JSON.parse;
         this.scope = config.scope || [
             'player.basic_info:read',
