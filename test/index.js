@@ -42,13 +42,14 @@ describe( 'brinkbit.js', function() {
             gameId: 'valid',
         });
         expect( brinkbit ).to.be.an.instanceOf( Brinkbit );
+        expect( brinkbit.base ).to.equal( 'https://brinkbit.com/api/0.1/valid/' );
         expect( brinkbit.Player ).to.be.a( 'function' );
         brinkbit = new Brinkbit({
             gameId: 'valid',
             base: '/valid',
         });
         expect( brinkbit ).to.be.an.instanceOf( Brinkbit );
-        expect( brinkbit.base ).to.equal( '/valid/valid' );
+        expect( brinkbit.base ).to.equal( '/valid/valid/' );
     });
 
     describe( 'brinkbit.request', function() {
