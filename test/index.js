@@ -48,6 +48,7 @@ describe( 'brinkbit.js', function() {
             base: '/valid',
         });
         expect( brinkbit ).to.be.an.instanceOf( Brinkbit );
+        expect( brinkbit.base ).to.equal( '/valid/valid' );
     });
 
     describe( 'brinkbit.request', function() {
