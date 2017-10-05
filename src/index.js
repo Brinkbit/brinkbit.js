@@ -10,9 +10,10 @@ const store = require( 'store' );
 const normalizeArguments = require( './validate/normalizeArguments' );
 const normalizeResponse = require( './validate/normalizeResponse' );
 const validate = require( './validate' );
+const ValidationError = require( './validate/validationError' );
 const BrinkbitEvent = require( './events' );
-
-const Player = require( './player' );
+const Plugin = require( './plugin' );
+const Player = require( './plugins/player' );
 
 class Brinkbit {
     constructor( config ) {
@@ -147,6 +148,10 @@ class Brinkbit {
             return player;
         });
         return normalizeResponse( promise, options );
+    }
+
+    isLoggedIn() {
+        return !!this.Player.primary;
     }
 
     logout() {
@@ -298,6 +303,9 @@ class Brinkbit {
 }
 
 Brinkbit.BrinkbitEvent = BrinkbitEvent;
+Brinkbit.validate = validate;
+Brinkbit.ValidationError = ValidationError;
+Brinkbit.Plugin = Plugin;
 
 eventEmitter( Brinkbit.prototype );
 
