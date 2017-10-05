@@ -1,15 +1,15 @@
-const merge = require( 'lodash.merge' );
-const pick = require( 'lodash.pick' );
-const get = require( 'lodash.get' );
-const set = require( 'lodash.set' );
-const eventEmitter = require( 'event-emitter' );
+import merge from 'lodash.merge';
+import pick from 'lodash.pick';
+import get from 'lodash.get';
+import set from 'lodash.set';
+import eventEmitter from 'event-emitter';
 
-const Brinkbit = require( './' );
-const validate = require( './validate' );
-const ValidationError = require( './validate/validationError' );
-const normalizeArguments = require( './validate/normalizeArguments' );
-const normalizeResponse = require( './validate/normalizeResponse' );
-const BrinkbitEvent = require( './events' );
+import Brinkbit from './';
+import validate from './validate';
+import ValidationError from './validate/validationError';
+import normalizeArguments from './validate/normalizeArguments';
+import normalizeResponse from './validate/normalizeResponse';
+import BrinkbitEvent from './events';
 
 class Plugin {
 
@@ -213,7 +213,6 @@ class Plugin {
 
 }
 
-
 eventEmitter( Plugin.prototype );
 
-module.exports = Plugin;
+export default Plugin;

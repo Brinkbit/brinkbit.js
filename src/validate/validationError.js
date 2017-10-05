@@ -1,6 +1,8 @@
-const customError = require( 'custom-error-instance' );
+import customError from 'custom-error-instance';
 
-module.exports = customError( 'ValidationError', {
+const ValidationError = customError( 'ValidationError', {
     message: 'Validation failed',
     details: [],
 });
+
+export default ValidationError;

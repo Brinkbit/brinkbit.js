@@ -1,11 +1,11 @@
-const chai = require( 'chai' );
-const merge = require( 'lodash.merge' );
+import chai from 'chai';
+import merge from 'lodash.merge';
 
-const Brinkbit = require( '../src' );
-const ValidationError = require( '../src/validate/validationError' );
-const env = require( '../env' );
+import Brinkbit from '../src';
+import ValidationError from '../src/validate/validationError';
+import env from '../env';
 
-const expect = chai.expect;
+const { expect } = chai;
 
 describe( 'brinkbit.js', function() {
     require( './validate' );

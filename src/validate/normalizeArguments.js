@@ -1,4 +1,4 @@
-module.exports = function normalizeArguments( ...args ) {
+function normalizeArguments( ...args ) {
     let options = {};
     if ( typeof args[0] === 'object' ) {
         options = args[0];
@@ -16,4 +16,6 @@ module.exports = function normalizeArguments( ...args ) {
         options.callback = args[args.length - 1];
     }
     return options;
-};
+}
+
+export default normalizeArguments;

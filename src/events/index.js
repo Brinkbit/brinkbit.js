@@ -5,4 +5,4 @@ class BrinkbitEvent {
     }
 }
 
-module.exports = BrinkbitEvent;
+export default BrinkbitEvent;

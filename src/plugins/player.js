@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
 
-const merge = require( 'lodash.merge' );
+import merge from 'lodash.merge';
 
-const validate = require( '../validate' );
-const ValidationError = require( '../validate/validationError' );
-const normalizeArguments = require( '../validate/normalizeArguments' );
-const Plugin = require( '../plugin' );
+import validate from '../validate';
+import ValidationError from '../validate/validationError';
+import normalizeArguments from '../validate/normalizeArguments';
+import Plugin from '../plugin';
 
 function initialize( brinkbit ) {
     class Player extends Plugin {
@@ -119,7 +119,9 @@ function initialize( brinkbit ) {
     return Player;
 }
 
-module.exports = {
+const config = {
     name: 'Player',
     initialize,
 };
+
+export default config;
