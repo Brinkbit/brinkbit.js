@@ -1,9 +1,11 @@
-const expect = require( 'chai' ).expect;
-const uuid = require( 'uuid' );
+import chai from 'chai';
+import uuid from 'uuid';
 
-const Brinkbit = require( '../../src' );
-const env = require( '../../env' );
-const ValidationError = require( '../../src/validate/validationError' );
+import Brinkbit from '../../src';
+import env from '../../env';
+import ValidationError from '../../src/validate/validationError';
+
+const { expect } = chai;
 
 describe( 'Player', function() {
     before( function() {

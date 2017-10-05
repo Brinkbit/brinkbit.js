@@ -1,4 +1,5 @@
-const validateJs = require( 'validate.js' );
+import validateJs from 'validate.js';
+import ValidationError from './validationError';
 
 validateJs.validators.dataType = function validateDataType( value, options ) {
     return ( value === null || value === undefined || validateJs[`is${validateJs.capitalize( options )}`]( value )) ? null : `is not of type ${options}`;
@@ -7,8 +8,6 @@ validateJs.validators.dataType = function validateDataType( value, options ) {
 validateJs.validators.instanceOf = function validateInstanceof( value, options ) {
     return ( value === null || value === undefined || value instanceof options );
 };
-
-const ValidationError = require( './validationError' );
 
 const validate = function validate( attributes, constraints ) {
     const invalid = validateJs( attributes, constraints );
@@ -34,4 +33,4 @@ validate.constructor = function validateConstructor( config, constraints ) {
     }
 };
 
-module.exports = validate;
+export default validate;

@@ -1,19 +1,19 @@
 /* eslint-disable no-param-reassign */
 
-global.Promise = require( 'bluebird' );
-const eventEmitter = require( 'event-emitter' );
-const request = require( 'browser-request' );
-const merge = require( 'lodash.merge' );
-const resolveUrl = require( 'resolve-url' );
-const store = require( 'store' );
+import Bluebird from 'bluebird';
+import eventEmitter from 'event-emitter';
+import request from 'browser-request';
+import merge from 'lodash.merge';
+import resolveUrl from 'resolve-url';
+import store from 'store';
 
-const normalizeArguments = require( './validate/normalizeArguments' );
-const normalizeResponse = require( './validate/normalizeResponse' );
-const validate = require( './validate' );
-const ValidationError = require( './validate/validationError' );
-const BrinkbitEvent = require( './events' );
-const Plugin = require( './plugin' );
-const Player = require( './plugins/player' );
+import normalizeArguments from './validate/normalizeArguments';
+import normalizeResponse from './validate/normalizeResponse';
+import validate from './validate';
+import ValidationError from './validate/validationError';
+import BrinkbitEvent from './events';
+import Plugin from './plugin';
+import Player from './plugins/player';
 
 class Brinkbit {
     constructor( config ) {
@@ -90,7 +90,7 @@ class Brinkbit {
     login( ...args ) {
         const options = normalizeArguments( ...args );
         let token;
-        const promise = Promise.any([
+        const promise = Bluebird.any([
             validate( options, {
                 email: {
                     dataType: 'string',
@@ -165,7 +165,7 @@ class Brinkbit {
             data = { emailOrUsername: data };
         }
         data.gameId = data.gameId || this.gameId;
-        return Promise.any([
+        return Bluebird.any([
             validate( data, {
                 gameId: {
                     dataType: 'string',
@@ -254,7 +254,7 @@ class Brinkbit {
                     Authorization: `Bearer ${token}`,
                 });
             }
-            return new Promise(( resolve, reject ) => {
+            return new Bluebird(( resolve, reject ) => {
                 request( options, ( err, xhr, body ) => {
                     if (( err && !( err instanceof SyntaxError )) || xhr.statusCode >= 400 ) {
                         this.emit( 'error', xhr );
@@ -307,6 +307,13 @@ Brinkbit.validate = validate;
 Brinkbit.ValidationError = ValidationError;
 Brinkbit.Plugin = Plugin;
 
+export {
+    BrinkbitEvent,
+    validate,
+    ValidationError,
+    Plugin,
+};
+
 eventEmitter( Brinkbit.prototype );
 
-module.exports = Brinkbit;
+export default Brinkbit;

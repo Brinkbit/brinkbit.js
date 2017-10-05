@@ -1,6 +1,9 @@
-const expect = require( 'chai' ).expect;
+import chai from 'chai';
 
-const normalizeArguments = require( '../../src/validate/normalizeArguments.js' );
+import normalizeArguments from '../../src/validate/normalizeArguments';
+
+const { expect } = chai;
+
 
 describe( 'normalizeArguments', function() {
     it( 'should expose a function', function() {

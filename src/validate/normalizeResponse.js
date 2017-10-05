@@ -1,4 +1,4 @@
-module.exports = function normalizeResponse( promise, options ) {
+function normalizeResponse( promise, options ) {
     return promise.then(( data ) => {
         if ( typeof options.callback === 'function' ) {
             options.callback( null, data );
@@ -17,4 +17,6 @@ module.exports = function normalizeResponse( promise, options ) {
         }
         return Promise.reject( error );
     });
-};
+}
+
+export default normalizeResponse;

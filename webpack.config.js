@@ -10,7 +10,7 @@ module.exports = {
     },
     module: {
         loaders: [
-            { test: /\.js$/, loader: `babel-loader${process.env.NODE_ENV === 'test' ? '' : '?presets[]=es2015'}` },
+            { test: /\.js$/, loader: 'babel-loader?presets[]=env' },
         ],
     },
     plugins: [

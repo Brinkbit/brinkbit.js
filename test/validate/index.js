@@ -1,6 +1,8 @@
-const expect = require( 'chai' ).expect;
+import chai from 'chai';
 
-const validate = require( '../../src/validate/index.js' );
+import validate from '../../src/validate';
+
+const { expect } = chai;
 
 describe( 'validate', function() {
     it( 'should expose a function', function() {
