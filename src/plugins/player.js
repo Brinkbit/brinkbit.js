@@ -10,12 +10,16 @@ const Plugin = require( '../plugin' );
 function initialize( brinkbit ) {
     class Player extends Plugin {
 
-        constructor( config ) {
-            super( brinkbit, {}, config );
-            this.read = [ '_id', 'dateCreated', 'email', 'username' ];
-            this.write = [ 'email', 'password', 'username' ];
-            if ( config ) {
-                validate.constructor( config, {
+        constructor( initialData ) {
+            super( brinkbit, {
+                initialData,
+                read: [ '_id', 'dateCreated', 'email', 'username' ],
+                write: [ 'email', 'password', 'username' ],
+                pluginId: 'players',
+                type: 'core',
+            });
+            if ( initialData ) {
+                validate.constructor( initialData, {
                     username: {
                         dataType: 'string',
                     },
@@ -26,7 +30,6 @@ function initialize( brinkbit ) {
                         dataType: 'string',
                     },
                 });
-                this.data = config;
             }
             this.middleware.save = this.saveMiddleware.bind( this );
         }
@@ -67,15 +70,6 @@ function initialize( brinkbit ) {
                 options.body.password = undefined;
             }
             return options;
-        }
-
-        getUrl( method ) {
-            switch ( method ) {
-                case 'post':
-                    return './players/';
-                default:
-                    return `./players/${this.id}/`;
-            }
         }
 
         validate( method, data ) {

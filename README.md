@@ -77,7 +77,30 @@ brinkbit.login({
 })
 .then(( player ) => {
     // player is an authenticated player object
+    // You can also access the primary player via Brinkbit.Player.primary
+    console.log( player.id === Brinkbit.Player.primary.id );
 });
+```
+
+### Check if Logged In
+
+```javascript
+if ( brinkbit.loggedIn()) {
+    console.log( 'player is logged in' );
+}
+else {
+    console.log( 'player is not logged in' );
+}
+```
+
+### Logout
+
+```javascript
+brinkbit.logout();
+// player is logged out
+
+// alternative
+player.logout();
 ```
 
 ### Low Level Requests

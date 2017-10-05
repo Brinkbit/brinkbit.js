@@ -4,6 +4,10 @@ validateJs.validators.dataType = function validateDataType( value, options ) {
     return ( value === null || value === undefined || validateJs[`is${validateJs.capitalize( options )}`]( value )) ? null : `is not of type ${options}`;
 };
 
+validateJs.validators.instanceOf = function validateInstanceof( value, options ) {
+    return ( value === null || value === undefined || value instanceof options );
+};
+
 const ValidationError = require( './validationError' );
 
 const validate = function validate( attributes, constraints ) {
