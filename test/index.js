@@ -192,5 +192,35 @@ describe( 'brinkbit.js', function() {
         });
     }
 
+    describe( 'gamedata', function() {
+        before( function() {
+            this.brinkbit = new Brinkbit( env.client.config );
+            return this.brinkbit.login( env.player );
+        });
+
+        it( 'should create and save new game data', function() {
+            return this.brinkbit.Data.create({
+                prop: 'someData',
+                _id: 'myId',
+            })
+            .then(( gameData ) => {
+                expect( gameData ).to.be.an.instanceOf( this.brinkbit.Data );
+                expect( gameData.data.prop ).to.equal( 'someData' );
+                expect( gameData.data._id ).to.equal( 'myId' );
+            });
+        });
+
+        it( 'should destroy game data', function() {
+            const gameData = new this.brinkbit.Data({
+                prop: 'someData',
+                _id: 'myId',
+            });
+            return gameData.destroy()
+            .then(() => {
+                expect( gameData.id ).to.equal( undefined );
+            });
+        });
+    });
+
     require( './player' );
 });
