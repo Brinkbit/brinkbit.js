@@ -13,8 +13,12 @@ import validate from './validate';
 import ValidationError from './validate/validationError';
 import BrinkbitEvent from './events';
 import Plugin from './plugin';
+
+// plugins
+
 import Player from './plugins/player';
 import Data from './plugins/data';
+import Analytics from './plugins/analytics';
 
 class Brinkbit {
     constructor( config ) {
@@ -39,8 +43,12 @@ class Brinkbit {
             'player.basic_info:write',
             'data:read:write',
         ];
+
+        // initialize plugins
         this.use( Player );
         this.use( Data );
+        this.use( Analytics );
+
         const storedToken = this.retrieve( 'token' );
         if ( storedToken ) {
             this.Player.primary = new this.Player({ _id: this.retrieve( 'playerId' ) });

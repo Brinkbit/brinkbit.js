@@ -1,3 +1,4 @@
+import v4 from 'uuid/v4';
 import Plugin from '../plugin';
 
 function initializePlayerData( brinkbit, player ) {
@@ -6,6 +7,9 @@ function initializePlayerData( brinkbit, player ) {
         constructor( initialData ) {
             super( brinkbit, {
                 initialData,
+                defaults: {
+                    _id: v4(),
+                },
                 pluginId: 'playerdata',
                 type: 'player',
                 player,
@@ -22,6 +26,9 @@ function initializeGameData( brinkbit ) {
         constructor( initialData ) {
             super( brinkbit, {
                 initialData,
+                defaults: {
+                    _id: v4(),
+                },
                 pluginId: 'gamedata',
                 type: 'game',
             });
