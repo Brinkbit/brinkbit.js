@@ -113,7 +113,8 @@ class Plugin {
         const options = normalizeArguments( ...args );
         options.token = this.token;
         options.uri = options.uri || this.getUrl( 'get' );
-        const promise = this.validate( 'get', options )
+        const opts = this.processMiddleware( 'fetch', options );
+        const promise = this.validate( 'get', opts )
         .then(() => this.brinkbit._get( options ))
         .then(( response ) => {
             merge(
@@ -176,8 +177,9 @@ class Plugin {
     destroy( options = {}) {
         options.uri = this.getUrl( 'delete' );
         options.token = this.token || this.getPlayer().token;
+        const opts = this.processMiddleware( 'destroy', options );
         return this.validate( 'delete' )
-        .then(() => this.brinkbit._delete( options ))
+        .then(() => this.brinkbit._delete( opts ))
         .then(( response ) => {
             this.id = undefined;
             this.data.id = undefined;

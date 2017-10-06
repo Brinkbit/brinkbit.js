@@ -138,4 +138,33 @@ describe( 'Player', function() {
             });
         });
     });
+
+    describe( 'analytics', function() {
+        before( function() {
+            return this.brinkbit.login( env.player )
+            .then(( player ) => {
+                this.player = player;
+            });
+        });
+
+        it( 'should create and save new analytic', function() {
+            return this.player.Analytic.create({
+                type: 'someMetric',
+                prop: 'someData',
+            })
+            .then(( analytic ) => {
+                this.player.analytic = analytic;
+                expect( analytic ).to.be.an.instanceOf( this.player.Analytic );
+                expect( analytic.data.type ).to.equal( 'someMetric' );
+                expect( analytic.data.prop ).to.equal( 'someData' );
+            });
+        });
+
+        it( 'should destroy analytic', function() {
+            return this.player.analytic.destroy()
+            .then(() => {
+                expect( this.player.analytic.id ).to.equal( undefined );
+            });
+        });
+    });
 });
