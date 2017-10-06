@@ -32,6 +32,9 @@ function initialize( brinkbit ) {
                 });
             }
             this.middleware.save = this.saveMiddleware.bind( this );
+            Player.plugins.forEach(( plugin ) => {
+                this[plugin.name] = plugin.initialize( brinkbit, this );
+            });
         }
 
         login( ...args ) {
@@ -75,9 +78,7 @@ function initialize( brinkbit ) {
         validate( method, data ) {
             switch ( method ) {
                 case 'delete':
-                    return typeof this.id === 'string' ?
-                        Promise.resolve() :
-                        Promise.reject( new ValidationError( 'Cannot delete user without id' ));
+                    return Promise.reject( new Error( 'Cannot delete user' ));
                 case 'post':
                     return validate( data, {
                         username: {
@@ -116,11 +117,14 @@ function initialize( brinkbit ) {
 
     }
 
+    Player.plugins = [];
+
     return Player;
 }
 
 const config = {
     name: 'Player',
+    type: 'core',
     initialize,
 };
 

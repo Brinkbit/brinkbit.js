@@ -106,4 +106,36 @@ describe( 'Player', function() {
             });
         });
     });
+
+    describe( 'playerdata', function() {
+        before( function() {
+            return this.brinkbit.login( env.player )
+            .then(( player ) => {
+                this.player = player;
+            });
+        });
+
+        it( 'should create and save new player data', function() {
+            return this.player.Data.create({
+                prop: 'someData',
+                _id: 'myId',
+            })
+            .then(( playerData ) => {
+                expect( playerData ).to.be.an.instanceOf( this.player.Data );
+                expect( playerData.data.prop ).to.equal( 'someData' );
+                expect( playerData.data._id ).to.equal( 'myId' );
+            });
+        });
+
+        it( 'should destroy player data', function() {
+            const playerData = new this.player.Data({
+                prop: 'someData',
+                _id: 'myId',
+            });
+            return playerData.destroy()
+            .then(() => {
+                expect( playerData.id ).to.equal( undefined );
+            });
+        });
+    });
 });

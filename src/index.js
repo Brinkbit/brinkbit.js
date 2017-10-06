@@ -14,6 +14,7 @@ import ValidationError from './validate/validationError';
 import BrinkbitEvent from './events';
 import Plugin from './plugin';
 import Player from './plugins/player';
+import Data from './plugins/data';
 
 class Brinkbit {
     constructor( config ) {
@@ -39,6 +40,7 @@ class Brinkbit {
             'data:read:write',
         ];
         this.use( Player );
+        this.use( Data );
         const storedToken = this.retrieve( 'token' );
         if ( storedToken ) {
             this.Player.primary = new this.Player({ _id: this.retrieve( 'playerId' ) });
@@ -227,10 +229,51 @@ class Brinkbit {
     }
 
     use( plugin ) {
-        if ( Object.prototype.hasOwnProperty.call( this, plugin.name )) {
-            throw new Error( `Brinkbit plugin namespace conflict: two plugins are named '${plugin.name}'. Please rename one of them.` );
+        if ( Array.isArray( plugin )) {
+            plugin.forEach(( config ) => {
+                this.initialize( config );
+            });
         }
-        this[plugin.name] = plugin.initialize( this );
+        else {
+            this.initialize( plugin );
+        }
+    }
+
+    initialize( plugin ) {
+        validate.constructor( plugin, {
+            type: {
+                dataType: 'string',
+                presence: true,
+                inclusion: [
+                    'player',
+                    'game',
+                    'core',
+                ],
+            },
+            name: {
+                dataType: 'string',
+                presence: true,
+            },
+            initialize: {
+                dataType: 'function',
+                presence: true,
+            },
+        });
+        if ( plugin.type === 'player' ) {
+            if ( this.Player.prototype[plugin.name]) {
+                throw new Error( `Brinkbit plugin namespace conflict: a core player method is named '${plugin.name}'. Please rename the plugin.` );
+            }
+            if ( this.Player.plugins.indexOf( plugin.name ) !== -1 ) {
+                throw new Error( `Brinkbit plugin namespace conflict: two player plugins are named '${plugin.name}'. Please rename one of them.` );
+            }
+            this.Player.plugins.push( plugin );
+        }
+        else {
+            if ( this[plugin.name]) {
+                throw new Error( `Brinkbit plugin namespace conflict: two plugins are named '${plugin.name}'. Please rename one of them.` );
+            }
+            this[plugin.name] = plugin.initialize( this );
+        }
     }
 
     // private promise-driven api
@@ -244,7 +287,9 @@ class Brinkbit {
         })
         .then(() => {
             options.uri = this.resolveUrl( options.uri );
-            options.json = true;
+            if ( options.method !== 'DELETE' ) {
+                options.json = true;
+            }
             if ( typeof options.body === 'object' ) {
                 options.body = JSON.stringify( options.body );
             }

@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+
 import merge from 'lodash.merge';
 import pick from 'lodash.pick';
 import get from 'lodash.get';
@@ -51,15 +53,12 @@ class Plugin {
             initialData = {},
             defaults = {},
             type,
-            read = [],
-            write = [],
+            read,
+            write,
             middleware = {},
             player = brinkbit.Player.primary,
             pluginId,
         } = config;
-        if ( type === 'player' && !player ) {
-            throw new TypeError( 'Player is required for playerdata plugins' );
-        }
         this.pluginId = pluginId;
         this.player = player;
         this.brinkbit = brinkbit;
@@ -74,9 +73,20 @@ class Plugin {
             },
         });
         this.data = data;
-        if ( data._id ) {
+        if ( type === 'core' && data._id ) {
             this.id = initialData._id;
         }
+    }
+
+    getPlayer() {
+        if ( !this.player && !this.brinkbit.Player.primary ) {
+            throw new Error( 'No player logged in' );
+        }
+        const player = this.player || this.brinkbit.Player.primary;
+        if ( !player.token || !player.id ) {
+            throw new Error( 'No player logged in' );
+        }
+        return player;
     }
 
     validate() { // eslint-disable-line class-methods-use-this
@@ -84,18 +94,19 @@ class Plugin {
     }
 
     getUrl( method ) {
+        const key = this.id || this.data._id;
         if ( this.type === 'core' ) {
             switch ( method ) {
                 case 'post':
                     return `./${this.pluginId}/`;
                 default:
-                    return `./${this.pluginId}/${this.id}/`;
+                    return `./${this.pluginId}/${key}/`;
             }
         }
         if ( this.type === 'player' ) {
-            return `./${this.pluginId}/players/${this.player.id}/keys/${this.id}`;
+            return `./data/${this.pluginId}/players/${this.getPlayer().id}/keys/${key}`;
         }
-        return `./${this.pluginId}/keys/${this.id}`;
+        return `./data/${this.pluginId}/keys/${key}`;
     }
 
     fetch( ...args ) {
@@ -107,10 +118,7 @@ class Plugin {
         .then(( response ) => {
             merge(
                 this.data,
-                pick(
-                    this.type === 'core' ? response.body : response.body.dataValue,
-                    this.read
-                )
+                this.readable( this.type === 'core' ? response.body : response.body.dataValue )
             );
             this.emit( 'fetch', new BrinkbitEvent( 'fetch', response ));
             return response;
@@ -123,9 +131,9 @@ class Plugin {
         if ( options.body ) {
             this.set( options.body );
         }
-        options.token = this.token;
-        options.body = pick( this.data, this.write );
+        options.token = this.token || this.getPlayer().token;
         options.method = options.method || ( this.id ? 'put' : 'post' );
+        options.body = options.method === 'put' || options.method === 'post' ? this.writeable( this.data ) : undefined;
         options.uri = options.uri || this.getUrl( options.method );
         const opts = this.processMiddleware( 'save', options );
         const validationResponse = this.validate( opts.method, opts.body );
@@ -152,15 +160,12 @@ class Plugin {
         })()
         .then(() => this.brinkbit._request( opts ))
         .then(( response ) => {
-            if ( this.type !== 'core' ) {
-                this.set( response.body.dataValue );
-            }
-            else {
-                this.set( response.body );
-            }
-            if ( response.body._id ) {
-                this.data._id = response.body._id;
-                this.id = response.body._id;
+            merge(
+                this.data,
+                this.readable( this.type === 'core' ? response.body : response.body.dataValue )
+            );
+            if ( this.data._id ) {
+                this.id = this.data._id;
             }
             this.emit( 'save', new BrinkbitEvent( 'save', response ));
             return response;
@@ -168,9 +173,11 @@ class Plugin {
         return normalizeResponse( promise, options );
     }
 
-    destroy() {
+    destroy( options = {}) {
+        options.uri = this.getUrl( 'delete' );
+        options.token = this.token || this.getPlayer().token;
         return this.validate( 'delete' )
-        .then(() => this.brinkbit._delete( this.getUrl( 'delete' )))
+        .then(() => this.brinkbit._delete( options ))
         .then(( response ) => {
             this.id = undefined;
             this.data.id = undefined;
@@ -187,10 +194,10 @@ class Plugin {
 
     set( path, value ) {
         if ( typeof path === 'object' ) {
-            merge( this.data, pick( path, this.write ));
+            merge( this.data, this.writeable( path ));
         }
         else if ( typeof path === 'string' ) {
-            if ( !this.write.includes( path )) {
+            if ( this.write && !this.write.includes( path )) {
                 throw new Error( `Path ${path} is not writeable!` );
             }
             set( this.data, path, value );
@@ -198,6 +205,14 @@ class Plugin {
         else {
             throw new Error( `${typeof path} is not a valid type for path` );
         }
+    }
+
+    writeable( data ) {
+        return this.write ? pick( data, this.write ) : data;
+    }
+
+    readable( data ) {
+        return this.read ? pick( data, this.read ) : data;
     }
 
     processMiddleware( method, opts ) {
