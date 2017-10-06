@@ -275,6 +275,9 @@ class Brinkbit {
                 throw new Error( `Brinkbit plugin namespace conflict: two player plugins are named '${plugin.name}'. Please rename one of them.` );
             }
             this.Player.plugins.push( plugin );
+            if ( this.Player.primary ) {
+                this.Player.primary[plugin.name] = plugin.initialize( this, this.Player.primary );
+            }
         }
         else {
             if ( this[plugin.name]) {

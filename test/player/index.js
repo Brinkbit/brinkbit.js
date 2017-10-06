@@ -167,4 +167,43 @@ describe( 'Player', function() {
             });
         });
     });
+
+    describe( 'third party plugins', function() {
+        before( function() {
+            return this.brinkbit.login( env.player )
+            .then(( player ) => {
+                this.player = player;
+            });
+        });
+
+        describe( 'player plugin', function() {
+            it( 'should add the plugin to the Player class and primary player', function() {
+                const plugin = {
+                    name: 'CustomPlugin',
+                    type: 'player',
+                    initialize: () => {
+                        class CustomPlugin {}
+                        return CustomPlugin;
+                    },
+                };
+                this.brinkbit.use( plugin );
+                expect( this.brinkbit.Player.primary ).to.have.property( 'CustomPlugin' );
+            });
+        });
+
+        describe( 'game plugin', function() {
+            it( 'should add the plugin to the Player class and primary player', function() {
+                const plugin = {
+                    name: 'CustomPlugin',
+                    type: 'game',
+                    initialize: () => {
+                        class CustomPlugin {}
+                        return CustomPlugin;
+                    },
+                };
+                this.brinkbit.use( plugin );
+                expect( this.brinkbit ).to.have.property( 'CustomPlugin' );
+            });
+        });
+    });
 });
