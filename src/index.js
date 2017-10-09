@@ -6,19 +6,13 @@ import request from 'browser-request';
 import merge from 'lodash.merge';
 import resolveUrl from 'resolve-url';
 import store from 'store';
+import normalizeArguments from 'brinkbit-plugin/src/validate/normalizeArguments';
+import normalizeResponse from 'brinkbit-plugin/src/validate/normalizeResponse';
+import validate from 'brinkbit-plugin/src/validate';
+import ValidationError from 'brinkbit-plugin/src/validate/validationError';
+import BrinkbitEvent from 'brinkbit-plugin/src/events';
 
-import normalizeArguments from './validate/normalizeArguments';
-import normalizeResponse from './validate/normalizeResponse';
-import validate from './validate';
-import ValidationError from './validate/validationError';
-import BrinkbitEvent from './events';
-import Plugin from './plugin';
-
-// plugins
-
-import Player from './plugins/player';
-import Data from './plugins/data';
-import Analytics from './plugins/analytics';
+const Plugin = require( 'brinkbit-plugin' );
 
 class Brinkbit {
     constructor( config ) {
@@ -44,10 +38,7 @@ class Brinkbit {
             'data:read:write',
         ];
 
-        // initialize plugins
-        this.use( Player );
-        this.use( Data );
-        this.use( Analytics );
+        this.use( Plugin.defaults );
 
         const storedToken = this.retrieve( 'token' );
         if ( storedToken ) {
@@ -373,3 +364,5 @@ export {
 eventEmitter( Brinkbit.prototype );
 
 export default Brinkbit;
+
+module.exports = Brinkbit;
