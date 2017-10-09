@@ -1,15 +1,13 @@
 import chai from 'chai';
 import merge from 'lodash.merge';
+import ValidationError from 'brinkbit-plugin/src/validate/validationError';
 
 import Brinkbit from '../src';
-import ValidationError from '../src/validate/validationError';
 import env from '../env';
 
 const { expect } = chai;
 
 describe( 'brinkbit.js', function() {
-    require( './validate' );
-
     it( 'should expose a class', function() {
         expect( Brinkbit ).to.be.a( 'function' );
     });
