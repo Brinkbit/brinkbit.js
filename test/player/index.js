@@ -1,6 +1,5 @@
 import chai from 'chai';
 import uuid from 'uuid';
-import ValidationError from 'brinkbit-plugin/src/validate/validationError';
 
 import Brinkbit from '../../src';
 import env from '../../env';
@@ -156,6 +155,16 @@ describe( 'Player', function() {
                 expect( analytic ).to.be.an.instanceOf( this.player.Analytic );
                 expect( analytic.data.type ).to.equal( 'someMetric' );
                 expect( analytic.data.prop ).to.equal( 'someData' );
+            });
+        });
+
+        it( 'should create and save a session', function() {
+            return this.player.Analytic.create({
+                type: 'session',
+            })
+            .then(( analytic ) => {
+                expect( analytic ).to.be.an.instanceOf( this.player.Analytic );
+                expect( analytic.data.type ).to.equal( 'session' );
             });
         });
 
