@@ -35,9 +35,9 @@ describe( 'Player', function() {
 
         it( 'should update locally with user\'s data from the server', function() {
             const player = new this.brinkbit.Player({
-                _id: this.player.id,
+                token: this.player.token,
             });
-            player.token = this.player.token;
+            expect( player ).to.have.property( 'token' ).and.equal( this.player.token );
             return player.fetch()
             .then(() => {
                 expect( player.data.username ).to.equal( this.player.data.username );
@@ -45,7 +45,7 @@ describe( 'Player', function() {
             });
         });
 
-        it( 'should reject if id is not a string', function( done ) {
+        it( 'should reject if token is not a string', function( done ) {
             const player = new this.brinkbit.Player();
             player.fetch()
             .catch(() => {
@@ -59,12 +59,12 @@ describe( 'Player', function() {
             const rand = uuid.v4().slice( 0, 5 );
             const username = `fireball_${rand}`;
             const email = `fireball${rand}@trialbyfireball.com`;
-            this.player = new this.brinkbit.Player({
+            const player = new this.brinkbit.Player({
                 username,
                 email,
                 password: 'FireballsAreTheBest',
             });
-            return this.player.save()
+            return player.save()
             .then(( response ) => {
                 expect( response.body.username ).to.equal( username );
                 expect( response.body.email ).to.equal( email );
@@ -74,16 +74,25 @@ describe( 'Player', function() {
         it( 'should update a player if it has an id', function() {
             const rand = uuid.v4().slice( 0, 5 );
             const email = `fireball${rand}@trialbyfireball.com`;
-            return this.player.login()
-            .then(() => this.player.save({
-                body: {
-                    email,
-                },
-            }))
-            .then(( response ) => {
-                expect( response.body.email ).to.equal( email );
-                expect( this.player.data.email ).to.equal( email );
-            });
+            const newEmail = `fireball${uuid.v4().slice( 0, 5 )}@trialbyfireball.com`;
+            const username = `fireball_${rand}`;
+            return this.brinkbit.Player.create({
+                username,
+                email,
+                password: 'FireballsAreTheBest',
+            })
+            .then( player =>
+                player.login()
+                .then(() => player.save({
+                    body: {
+                        email: newEmail,
+                    },
+                }))
+                .then(( response ) => {
+                    expect( response.body.email ).to.equal( newEmail );
+                    expect( player.data.email ).to.equal( newEmail );
+                })
+            );
         });
     });
 
