@@ -684,8 +684,8 @@ babel-polyfill@^6.23.0:
     regenerator-runtime "^0.10.5"
 
 babel-preset-env@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/babel-preset-env/-/babel-preset-env-1.6.0.tgz#2de1c782a780a0a5d605d199c957596da43c44e4"
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/babel-preset-env/-/babel-preset-env-1.6.1.tgz#a18b564cc9b9afdf4aae57ae3c1b0d99188e6f48"
   dependencies:
     babel-plugin-check-es2015-constants "^6.22.0"
     babel-plugin-syntax-trailing-function-commas "^6.22.0"
@@ -891,8 +891,8 @@ braces@^1.8.2:
     repeat-element "^1.1.2"
 
 brinkbit-plugin@^0.1.0:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/brinkbit-plugin/-/brinkbit-plugin-0.1.1.tgz#e7d42fe895e2e8723ffa12a64431154236cee54d"
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/brinkbit-plugin/-/brinkbit-plugin-0.1.3.tgz#f706b9b38b2c16741846886af29657d7234b10a1"
   dependencies:
     custom-error-instance "^2.1.1"
     event-emitter "^0.3.5"
@@ -904,8 +904,8 @@ brinkbit-plugin@^0.1.0:
     validate.js "^0.11.1"
 
 brinkbit@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/brinkbit/-/brinkbit-0.2.0.tgz#d6e606f575e5bd12da702806d5c07e9bf0223fce"
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/brinkbit/-/brinkbit-0.2.1.tgz#cd50a9369a41bc07200332db21bf0805c8abfae4"
   dependencies:
     bluebird "^3.5.1"
     brinkbit-plugin "^0.1.0"
@@ -1341,8 +1341,8 @@ cron@1.2.1:
     moment-timezone "^0.5.x"
 
 cross-env@^5.0.1:
-  version "5.0.5"
-  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-5.0.5.tgz#4383d364d9660873dd185b398af3bfef5efffef3"
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-5.1.0.tgz#1f12d6b3777d5847dcf9cf39fbee3c6a76dd5058"
   dependencies:
     cross-spawn "^5.1.0"
     is-windows "^1.0.0"
@@ -1867,8 +1867,8 @@ eslint-plugin-node@^4.2.2:
     semver "5.3.0"
 
 eslint-plugin-promise@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-promise/-/eslint-plugin-promise-3.5.0.tgz#78fbb6ffe047201627569e85a6c5373af2a68fca"
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-promise/-/eslint-plugin-promise-3.6.0.tgz#54b7658c8f454813dc2a870aff8152ec4969ba75"
 
 eslint-plugin-react@^7.1.0:
   version "7.4.0"
@@ -2045,8 +2045,8 @@ express-bearer-token@^2.1.0:
   resolved "https://registry.yarnpkg.com/express-bearer-token/-/express-bearer-token-2.1.0.tgz#d5c823c4d180f9d2b08798fced3dde9cc9c4906e"
 
 express@^4.15.3:
-  version "4.16.1"
-  resolved "https://registry.yarnpkg.com/express/-/express-4.16.1.tgz#6b33b560183c9b253b7b62144df33a4654ac9ed0"
+  version "4.16.2"
+  resolved "https://registry.yarnpkg.com/express/-/express-4.16.2.tgz#e35c6dfe2d64b7dca0a5cd4f21781be3299e076c"
   dependencies:
     accepts "~1.3.4"
     array-flatten "1.1.1"
@@ -3039,11 +3039,11 @@ karma-json-reporter@^1.2.0:
   resolved "https://registry.yarnpkg.com/karma-json-reporter/-/karma-json-reporter-1.2.1.tgz#7b4d6102d1ccaf573061ca76f11e9586948ecce3"
 
 karma-mocha-reporter@^2.2.3:
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/karma-mocha-reporter/-/karma-mocha-reporter-2.2.4.tgz#0c9cb22c27d864d0f6694df0cf01caabce9064d4"
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/karma-mocha-reporter/-/karma-mocha-reporter-2.2.5.tgz#15120095e8ed819186e47a0b012f3cd741895560"
   dependencies:
     chalk "^2.1.0"
-    log-symbols "^2.0.0"
+    log-symbols "^2.1.0"
     strip-ansi "^4.0.0"
 
 karma-mocha@^1.3.0:
@@ -3263,7 +3263,7 @@ lodash@^4.0.0, lodash@^4.14.0, lodash@^4.17.4, lodash@^4.3.0, lodash@^4.5.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
-log-symbols@^2.0.0:
+log-symbols@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/log-symbols/-/log-symbols-2.1.0.tgz#f35fa60e278832b538dc4dddcbb478a45d3e3be6"
   dependencies:
@@ -4612,6 +4612,10 @@ source-map@~0.2.0:
   dependencies:
     amdefine ">=0.0.4"
 
+source-map@~0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
+
 spawn-wrap@^1.3.8:
   version "1.3.8"
   resolved "https://registry.yarnpkg.com/spawn-wrap/-/spawn-wrap-1.3.8.tgz#fa2a79b990cbb0bb0018dca6748d88367b19ec31"
@@ -4930,11 +4934,11 @@ uglify-js@^2.6, uglify-js@^2.8.27:
     uglify-to-browserify "~1.0.0"
 
 uglify-js@^3.0.18:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.1.3.tgz#d61f0453b4718cab01581f3162aa90bab7520b42"
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.1.4.tgz#8e1efa1244b207588e525c9c1835a33458b90aee"
   dependencies:
     commander "~2.11.0"
-    source-map "~0.5.1"
+    source-map "~0.6.1"
 
 uglify-to-browserify@~1.0.0:
   version "1.0.2"
