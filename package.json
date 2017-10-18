@@ -4,7 +4,7 @@
   "description": "Javascript Brinkbit SDK",
   "main": "dist/brinkbit.js",
   "scripts": {
-    "preversion": "npm test && yarn build && git add -A && git commit -m 'Rebuild'",
+    "preversion": "yarn test && yarn build && git add -A && git commit -m 'Rebuild'",
     "postversion": "git push origin master && hub pull-request -m 'Bump version' && git push --tags upstream && npm publish",
     "start": "./node_modules/.bin/pm2 start test/mockServer/index.js --name='mockServer'",
     "stop": "./node_modules/.bin/pm2 stop mockServer",
