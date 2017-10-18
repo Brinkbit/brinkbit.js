@@ -904,8 +904,8 @@ brinkbit-plugin@^0.1.0:
     validate.js "^0.11.1"
 
 brinkbit@^0.2.0:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/brinkbit/-/brinkbit-0.2.1.tgz#cd50a9369a41bc07200332db21bf0805c8abfae4"
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/brinkbit/-/brinkbit-0.2.2.tgz#1ea6482b3bd1d45443cd1474de76c78483c9c3e4"
   dependencies:
     bluebird "^3.5.1"
     brinkbit-plugin "^0.1.0"
